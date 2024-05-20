@@ -15,7 +15,7 @@ public class OrderDetails {
     @Column(name = "orderdetail_id")
     private Long id;
 
-    private Double total;
+    private Long total;
     private String status;
 
     @Column(name = "order_code")

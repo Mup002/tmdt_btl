@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository;
 import tmdtdemo.tmdt.entity.OrderDetails;
 @Repository
 public interface OrderRepository extends JpaRepository<OrderDetails,Long> {
+    OrderDetails findOrderDetailsByCode
+            (String code);
 }

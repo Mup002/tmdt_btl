@@ -39,4 +39,10 @@ public class AdminServiceImpl implements AdminService {
     public String createOrder(String username, OrderRequest request) {
         return orderService.newOrder(username,request);
     }
+
+    @Override
+    public String createFlashOrder(String username, OrderRequest request, List<CartRequest> carts) {
+
+        return null;
+    }
 }

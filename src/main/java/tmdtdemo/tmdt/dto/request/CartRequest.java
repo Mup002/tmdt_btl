@@ -6,6 +6,6 @@ import lombok.Data;
 public class CartRequest {
     private Long idSku;
     private Long idSpu;
+    private Long price;
     private Long quantity;
-    private Double price;
 }

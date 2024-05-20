@@ -12,4 +12,5 @@ public interface AdminService {
     BaseResponse createUser(UserRequest request);
     List<CartResponse> addCart(Long userID , CartRequest request);
     String createOrder(String username ,OrderRequest request);
+    String createFlashOrder(String username, OrderRequest request, List<CartRequest> carts);
 }

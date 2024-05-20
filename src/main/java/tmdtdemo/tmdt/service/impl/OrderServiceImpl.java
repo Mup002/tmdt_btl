@@ -8,18 +8,12 @@ import tmdtdemo.tmdt.common.OrderStatus;
 import tmdtdemo.tmdt.dto.request.OrderRequest;
 import tmdtdemo.tmdt.dto.response.CartResponse;
 import tmdtdemo.tmdt.dto.response.OrderResponse;
-import tmdtdemo.tmdt.entity.Coupon;
-import tmdtdemo.tmdt.entity.OrderDetails;
-import tmdtdemo.tmdt.entity.ProductSku;
-import tmdtdemo.tmdt.entity.ProductSpu;
+import tmdtdemo.tmdt.entity.*;
 import tmdtdemo.tmdt.exception.BaseException;
 import tmdtdemo.tmdt.exception.ResourceNotFoundException;
 import tmdtdemo.tmdt.repository.*;
 import tmdtdemo.tmdt.service.*;
-import tmdtdemo.tmdt.utils.AppConstants;
-import tmdtdemo.tmdt.utils.ChangeObject;
-import tmdtdemo.tmdt.utils.HelperUtils;
-import tmdtdemo.tmdt.utils.RandomCode;
+import tmdtdemo.tmdt.utils.*;
 
 import java.util.*;
 
@@ -66,11 +60,13 @@ public class OrderServiceImpl implements OrderService {
             /// truong hop tra sau / ship
 //            if(request.getPayment_id()== 1){
 //                newOrder.setStatus(OrderStatus.WAITING.toString());
+//            }else if(request.getPayment_id() == 2){
+//
 //            }
-            newOrder.setStatus(OrderStatus.DONE.toString());
-
             ///truong hop thanh toan online ////
 
+
+            newOrder.setStatus(OrderStatus.WAITING.toString());
 
             ///--updating........-----/////
 
@@ -115,5 +111,23 @@ public class OrderServiceImpl implements OrderService {
             orderResponse.setCartResponseList(cartResponseList);
         }
         return null;
+    }
+
+    @Override
+    public boolean getOrderCodeExits(String code) {
+        return !ObjectUtils.isEmpty(orderRepository.findOrderDetailsByCode(code)) ;
+    }
+
+    @Override
+    public OrderDetails getOrderByCode(String code) {
+        return orderRepository.findOrderDetailsByCode(code);
+    }
+
+    @Override
+    public String changePaymentStatus(String code) {
+        OrderDetails orderDetails = orderRepository.findOrderDetailsByCode(code);
+        orderDetails.setStatus(OrderStatus.DONE.toString());
+        orderRepository.save(orderDetails);
+        return "done";
     }
 }

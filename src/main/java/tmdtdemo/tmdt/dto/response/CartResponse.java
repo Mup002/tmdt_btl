@@ -8,6 +8,6 @@ public class CartResponse {
     private String productSku_name;
     private String src;
     private Long quantity;
-    private Double price;
+    private Long price;
 
 }
