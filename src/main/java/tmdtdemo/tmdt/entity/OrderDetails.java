@@ -40,11 +40,11 @@ public class OrderDetails {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(updatable = false)
+//    @Column(updatable = false)
     private Date createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Date();
-    }
+//    @PrePersist
+//    protected void onCreate() {
+//        this.createdAt = new Date();
+//    }
 }
