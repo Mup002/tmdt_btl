@@ -34,6 +34,9 @@ public class OrderDetails {
     private List<ProductSku> productSkus;
 
     @ManyToOne
+    @JoinColumn(name = "method_id")
+    private PaymentMethod paymentMethod;
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 

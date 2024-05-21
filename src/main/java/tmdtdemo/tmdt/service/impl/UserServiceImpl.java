@@ -20,10 +20,7 @@ import tmdtdemo.tmdt.service.UserService;
 import tmdtdemo.tmdt.utils.BaseResponse;
 import tmdtdemo.tmdt.utils.HelperUtils;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -99,4 +96,14 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUser() {
         return userRepository.findAll();
     }
+
+    @Override
+    public List<User> getAllUserRole() {
+        List<User> users = new ArrayList<>();
+        userRepository.findAll().stream()
+                .filter(user -> user.getRoles().stream().anyMatch(role -> role.getName().equals("USER")))
+                .forEach(users::add);
+        return users;
+    }
+
 }

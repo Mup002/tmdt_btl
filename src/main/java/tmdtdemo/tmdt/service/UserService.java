@@ -11,5 +11,6 @@ public interface UserService {
     User findUserByUsername(String username);
     String logout(String username);
     List<User> getAllUser();
+    List<User> getAllUserRole();
 
 }

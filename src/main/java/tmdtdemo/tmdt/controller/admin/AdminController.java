@@ -7,9 +7,13 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tmdtdemo.tmdt.dto.request.CartRequest;
+import tmdtdemo.tmdt.dto.request.FlashOrderRequest;
 import tmdtdemo.tmdt.dto.request.OrderRequest;
 import tmdtdemo.tmdt.dto.request.UserRequest;
 import tmdtdemo.tmdt.dto.response.CartResponse;
+import tmdtdemo.tmdt.entity.ProductSku;
+import tmdtdemo.tmdt.entity.ProductSpu;
+import tmdtdemo.tmdt.entity.User;
 import tmdtdemo.tmdt.service.AdminService;
 import tmdtdemo.tmdt.utils.BaseResponse;
 
@@ -39,5 +43,21 @@ public class AdminController {
     public ResponseEntity<String> createOrder(@RequestBody OrderRequest orderRequest,
                                               HttpServletRequest httpServletRequest){
         return ResponseEntity.ok(adminService.createOrder(httpServletRequest.getHeader("x-client-username"),orderRequest));
+    }
+    @GetMapping("/getAllUser")
+    public ResponseEntity<List<User>> getAllUser(){
+        return ResponseEntity.ok(adminService.getAllUser());
+    }
+    @GetMapping("/getAllSpu")
+    public ResponseEntity<List<ProductSpu>> getAllSpu(){
+        return ResponseEntity.ok(adminService.getAllSpu());
+    }
+    @GetMapping("/getAllSkuBy/{idSpu}")
+    public ResponseEntity<List<ProductSku>> getAllSku(@PathVariable("idSpu")Long idSpu){
+        return ResponseEntity.ok(adminService.getAllSku(idSpu));
+    }
+    @PostMapping("/createFlashOrder")
+    public ResponseEntity<String> createFlashOrder(@RequestBody FlashOrderRequest request){
+        return ResponseEntity.ok(adminService.createFlashOrder(request));
     }
 }

@@ -29,6 +29,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductService productService;
     private final ProductSpuRepo productSpuRepo;
     private final CartService cartService;
+    private final PaymentMethodRepo paymentMethodRepo;
 
     @Override
     public String newOrder(String username, OrderRequest request) {
@@ -65,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
 //            }
             ///truong hop thanh toan online ////
 
-
+            newOrder.setPaymentMethod(paymentMethodRepo.findPaymentMethodById(request.getPayment_id()));
             newOrder.setStatus(OrderStatus.WAITING.toString());
 
             ///--updating........-----/////

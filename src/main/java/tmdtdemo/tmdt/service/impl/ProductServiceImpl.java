@@ -124,4 +124,14 @@ public class ProductServiceImpl implements ProductService {
         }
         return responses;
     }
+
+    @Override
+    public List<ProductSpu> getAllProductSpu() {
+        return productSpuRepo.findAll();
+    }
+
+    @Override
+    public List<ProductSku> getAllProductSku(Long idSpu) {
+        return productSkuRepo.findProductSkusByProductSpuId(idSpu);
+    }
 }

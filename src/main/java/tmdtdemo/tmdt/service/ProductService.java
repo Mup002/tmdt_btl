@@ -22,4 +22,6 @@ public interface ProductService {
     String quantityOreder(Long id , Long ordered);
     ProductSpu findBySkuId(Long id);
     List<ProductTypeResponse> getByCategoriesAndType(Long categoryId);
+    List<ProductSpu> getAllProductSpu();
+    List<ProductSku> getAllProductSku(Long idSpu);
 }
