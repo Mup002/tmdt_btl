@@ -134,4 +134,12 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductSku> getAllProductSku(Long idSpu) {
         return productSkuRepo.findProductSkusByProductSpuId(idSpu);
     }
+
+    @Override
+    public ProductSku updateQuantity(Long skuId, Long new_quantity) {
+        ProductSku sku = productSkuRepo.findProductSkuById(skuId);
+        sku.setQuantity(sku.getQuantity() + new_quantity);
+        productSkuRepo.save(sku);
+        return sku;
+    }
 }

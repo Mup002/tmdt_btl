@@ -24,4 +24,5 @@ public interface ProductService {
     List<ProductTypeResponse> getByCategoriesAndType(Long categoryId);
     List<ProductSpu> getAllProductSpu();
     List<ProductSku> getAllProductSku(Long idSpu);
+    ProductSku updateQuantity(Long skuId,Long new_quantity);
 }
