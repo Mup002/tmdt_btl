@@ -76,4 +76,16 @@ public class DateFormat {
         }
         return res;
     }
+
+    public static Date convertStringToMonth(String month){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/yyyy");
+        Date res = new Date();
+        try {
+
+            res = dateFormat.parse(month);
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
+        return res;
+    }
 }

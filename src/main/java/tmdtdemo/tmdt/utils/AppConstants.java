@@ -8,4 +8,5 @@ public class AppConstants {
     public static final String TYPE_DEFAULT = "all";
     public static final String accessPrefixKey = "accessKey_";
     public static final String cartPrefixKey = "cart_username=";
+    public static final String FOR_ALL = "all";
 }

@@ -1,9 +1,6 @@
 package tmdtdemo.tmdt.utils;
 
-import tmdtdemo.tmdt.dto.response.ProductDetailsResponse;
-import tmdtdemo.tmdt.dto.response.ProductSkuResponse;
-import tmdtdemo.tmdt.dto.response.ProductSpuResponse;
-import tmdtdemo.tmdt.dto.response.RefreshTokenResponse;
+import tmdtdemo.tmdt.dto.response.*;
 import tmdtdemo.tmdt.entity.*;
 
 import java.util.ArrayList;
@@ -71,4 +68,21 @@ public class Mapper {
 //        details.setSkuResponseList(skuResponses);
 //        return details;
 //    }
+
+    public static ResultRevenueResponse revenueToResponse(ResultRevenue revenue){
+        ResultRevenueResponse response = new ResultRevenueResponse();
+        response.setCost(revenue.getCost());
+        response.setRevenue(revenue.getRevenue());
+        response.setProfit(revenue.getProfit());
+        response.setCreatedAt(revenue.getResultDate());
+        response.setUsername(revenue.getUser().getUsername());
+        return response;
+    }
+    public static List<ResultRevenueResponse> revenueToListResponse(List<ResultRevenue> revenues){
+        List<ResultRevenueResponse> responses = new ArrayList<>();
+        for(ResultRevenue r : revenues){
+            responses.add(revenueToResponse(r));
+        }
+        return responses;
+    }
 }

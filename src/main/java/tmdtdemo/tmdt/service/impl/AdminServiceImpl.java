@@ -3,6 +3,7 @@ package tmdtdemo.tmdt.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tmdtdemo.tmdt.common.OrderStatus;
 import tmdtdemo.tmdt.dto.request.CartRequest;
 import tmdtdemo.tmdt.dto.request.FlashOrderRequest;
@@ -66,6 +67,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    @Transactional
     public String createFlashOrder(FlashOrderRequest request) {
         OrderDetails orderDetails = new OrderDetails();
         orderDetails.setUser(userService.findUserByUsername(request.getUsername()));
@@ -87,7 +89,7 @@ public class AdminServiceImpl implements AdminService {
                 }
 
             }else{
-                throw new BaseException(String.valueOf(HttpStatus.BAD_REQUEST),"Khong du so luong san pham de thuc hien");
+                throw new BaseException(String.valueOf(HttpStatus.BAD_REQUEST),"Khong du so luong san pham de thuc hien " + sku.getId());
             }
         }
         orderDetails.setProductSkus(productSkuList);
