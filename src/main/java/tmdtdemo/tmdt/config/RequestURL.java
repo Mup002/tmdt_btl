@@ -6,15 +6,15 @@ public class RequestURL {
             "/api/v1/account/**",
             "/test/redis/**",
             "/test/token/**",
-            "/api/v1/room/**",
             "/api/v1/product/**",
-            "/api/v1/payment/vn-pay-callback"
+            "/api/v1/payment/vn-pay-callback",
+
     };
      protected static String[] SECURED_URLS_ROLE_USER = {
             "/api/v1/cart/**",
-            "/api/v1/comment/cmt",
             "/api/v1/user/index",
-             "/api/v1/payment/pay"
+             "/api/v1/payment/pay",
+             "/api/v1/order/**"
 
     };
     protected static   String[] SECURED_URLS_ROLE_ADMIN = {
