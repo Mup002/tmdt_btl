@@ -12,7 +12,7 @@ public class ImportHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date importAt;
+    private Date createdAt;
     private Long total_price;
     private boolean payment_status;
 

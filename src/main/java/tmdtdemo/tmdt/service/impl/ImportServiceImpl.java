@@ -33,7 +33,7 @@ public class ImportServiceImpl implements ImportService {
     @Transactional
     public String importDataProduct(ImportBillRequest request,String username) {
         ImportHistory history = new ImportHistory();
-        history.setImportAt(DateFormat.convertStringToDate(request.getImportAt()));
+        history.setCreatedAt(DateFormat.convertStringToDate(request.getImportAt()));
         history.setUser(userService.findUserByUsername(username));
         history.setTotal_price(request.getTotal_price());
         history.setPayment_status(true);

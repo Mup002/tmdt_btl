@@ -2,8 +2,10 @@ package tmdtdemo.tmdt.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import tmdtdemo.tmdt.dto.request.CartRequest;
 import tmdtdemo.tmdt.dto.response.CartResponse;
+import tmdtdemo.tmdt.entity.Image;
 import tmdtdemo.tmdt.entity.User;
 import tmdtdemo.tmdt.exception.ResourceNotFoundException;
 import tmdtdemo.tmdt.repository.ImageRepository;
@@ -37,10 +39,18 @@ public class CartServiceImpl implements CartService {
         response.setQuantity(cartRequest.getQuantity());
         response.setProductSku_name(productSkuRepo.findProductSkuById(cartRequest.getIdSku()).getColor());
         response.setProductSpu_name(productSpuRepo.findProductSpuById(cartRequest.getIdSpu()).getName());
-        response.setSrc(imageRepository.findImageBySpuIdAndSkuId(
+        Image image = imageRepository.findImageBySpuIdAndSkuId(
                 productSpuRepo.findProductSpuById(cartRequest.getIdSpu()).getId(),
-                productSkuRepo.findProductSkuById(cartRequest.getIdSku()).getId()
-        ).getSrc());
+                productSkuRepo.findProductSkuById(cartRequest.getIdSku()).getId());
+        if(ObjectUtils.isEmpty(image)){
+            response.setSrc(null);
+        }else{
+            response.setSrc(image.getSrc());
+        }
+//        response.setSrc(imageRepository.findImageBySpuIdAndSkuId(
+//                productSpuRepo.findProductSpuById(cartRequest.getIdSpu()).getId(),
+//                productSkuRepo.findProductSkuById(cartRequest.getIdSku()).getId()
+//        ).getSrc());
 
         if(!baseRedisService.hashExists(keyCart,"cartData")){
             cartList.add(response);
