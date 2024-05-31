@@ -142,4 +142,12 @@ public class ProductServiceImpl implements ProductService {
         productSkuRepo.save(sku);
         return sku;
     }
+
+    @Override
+    public ProductSku updateCost(Long skuId, Long new_cost) {
+        ProductSku sku = productSkuRepo.findProductSkuById(skuId);
+        sku.setCost(new_cost);
+        productSkuRepo.save(sku);
+        return sku;
+    }
 }

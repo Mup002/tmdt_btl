@@ -54,6 +54,7 @@ public class ImportServiceImpl implements ImportService {
             product.setImportHistory(history);
             importProductRepo.save(product);
             productService.updateQuantity(productRequest.getSkuId(),productRequest.getQuantity());
+            productService.updateCost(productRequest.getSkuId(),productRequest.getPrice());
         }
 
         return "Import successfully";

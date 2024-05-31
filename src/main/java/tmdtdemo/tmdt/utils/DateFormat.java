@@ -77,15 +77,16 @@ public class DateFormat {
         return res;
     }
 
-    public static Date convertStringToMonth(String month){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/yyyy");
-        Date res = new Date();
+    public static java.sql.Date convertStringToDateQuery(String date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        java.sql.Date res = null;
         try {
-
-            res = dateFormat.parse(month);
-        }catch (ParseException e){
+            java.util.Date utilDate = dateFormat.parse(date);
+            res = new java.sql.Date(utilDate.getTime());
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return res;
     }
+
 }

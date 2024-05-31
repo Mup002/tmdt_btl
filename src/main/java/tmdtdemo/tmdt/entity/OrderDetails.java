@@ -40,7 +40,7 @@ public class OrderDetails {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(updatable = false)
+
     private Date createdAt;
 
     @PrePersist

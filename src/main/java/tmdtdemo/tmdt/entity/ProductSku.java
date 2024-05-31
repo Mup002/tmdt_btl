@@ -15,7 +15,7 @@ public class ProductSku {
     private String color;
     private Long quantity;
     private Double price;
-
+    private Long cost;
     @ManyToOne
     @JoinColumn(name ="productspu_id")
     private ProductSpu productSpu;
