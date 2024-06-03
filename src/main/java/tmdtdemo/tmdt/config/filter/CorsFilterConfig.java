@@ -31,7 +31,9 @@ public class CorsFilterConfig {
 
     private static final String[] originAccept = {
             "http://localhost:5173",
-            "http://localhost:3000"
+            "http://localhost:3000",
+            "http://localhost:9200",
+            "http://localhost:5601"
     };
 
     @Bean

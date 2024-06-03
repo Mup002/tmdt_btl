@@ -48,7 +48,8 @@ public class AdminServiceImpl implements AdminService {
     }
     @Override
     public String createOrder(String username, OrderRequest request) {
-        return orderService.newOrder(username,request);
+//        return orderService.newOrder(username,request);
+        return null;
     }
 
     @Override

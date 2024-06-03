@@ -5,7 +5,7 @@ import tmdtdemo.tmdt.dto.response.OrderResponse;
 import tmdtdemo.tmdt.entity.OrderDetails;
 
 public interface OrderService {
-    String newOrder(String username, OrderRequest request);
+    String newOrder(String username, OrderRequest request,String ipAdress);
     OrderResponse detailOrder(String username);
     boolean getOrderCodeExits(String code);
     OrderDetails getOrderByCode(String code);

@@ -8,6 +8,8 @@ public class RequestURL {
             "/test/token/**",
             "/api/v1/product/**",
             "/api/v1/payment/vn-pay-callback",
+            "/api/v1/search/**",
+            "/api/v1/address/**"
 
     };
      protected static String[] SECURED_URLS_ROLE_USER = {

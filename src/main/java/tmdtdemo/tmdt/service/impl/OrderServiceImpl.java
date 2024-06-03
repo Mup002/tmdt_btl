@@ -3,6 +3,7 @@ package tmdtdemo.tmdt.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import tmdtdemo.tmdt.common.OrderStatus;
 import tmdtdemo.tmdt.dto.request.OrderRequest;
@@ -30,9 +31,18 @@ public class OrderServiceImpl implements OrderService {
     private final ProductSpuRepo productSpuRepo;
     private final CartService cartService;
     private final PaymentMethodRepo paymentMethodRepo;
+    private final AddressService addressService;
+    private final AddressRepository addressRepository;
+    private final PaymentService paymentService;
+    private final CarrierRepository carrierRepository;
+    private final ShippingDetailsRepo shippingDetailsRepo;
 
     @Override
-    public String newOrder(String username, OrderRequest request) {
+    @Transactional
+    public String newOrder(String username, OrderRequest request,String ipAddress) {
+        // tra ve mac dinh
+        String result = "done";
+
         String keyUser = HelperUtils.cartBuilderRedisKey(username);
         OrderDetails newOrder = new OrderDetails();
         if(baseRedisService.hashExists(keyUser,"cartData")){
@@ -56,20 +66,12 @@ public class OrderServiceImpl implements OrderService {
             }
             newOrder.setProductSkus(productSkuList);
             newOrder.setProductSpus(productSpuList);
-            //----Xu ly payment method --////
 
-            /// truong hop tra sau / ship
-//            if(request.getPayment_id()== 1){
-//                newOrder.setStatus(OrderStatus.WAITING.toString());
-//            }else if(request.getPayment_id() == 2){
-//
-//            }
-            ///truong hop thanh toan online ////
+            //-----------check dia chi---------////
 
-            newOrder.setPaymentMethod(paymentMethodRepo.findPaymentMethodById(request.getPayment_id()));
-            newOrder.setStatus(OrderStatus.WAITING.toString());
+            newOrder.setAddress(addressRepository.findAddressById(addressService.addIfDontExist(request.getAddressRequest())));
 
-            ///--updating........-----/////
+            //------------ket thuc check dia chi------///
 
             //----------- xu ly counpon---------////
             if(request.getCoupon_id() != null){
@@ -82,24 +84,55 @@ public class OrderServiceImpl implements OrderService {
                 }
             }
             //-----------ket thuc xu ly counpon---------////
-
-
             newOrder.setTotal(request.getTotal());
-            newOrder.setCode(RandomCode.genarateCodeForOrder());
+
+//            String orderCode = RandomCode.genarateCodeForOrder();
+//            newOrder.setCode(orderCode);
+            newOrder.setCode(request.getOrdercode());
             newOrder.setCreatedAt(new Date());
             if(!ObjectUtils.isEmpty(userRepository.findUserByUsername(username))){
                 newOrder.setUser(userRepository.findUserByUsername(username));
             }else{
                 throw new ResourceNotFoundException("Ko tim thay user voi : " + username);
             }
+            //----Xu ly payment method --////
 
+            /// truong hop tra sau / ship
+            newOrder.setPaymentMethod(paymentMethodRepo.findPaymentMethodById(request.getPayment_id()));
+            if(request.getPayment_id()== 1){
+                newOrder.setStatus(OrderStatus.WAITING.toString());
+            }else if(request.getPayment_id() == 2){
+                result = paymentService.createVnPayPayment(request.getOrdercode(),
+                        "NCB",
+                        ipAddress,
+                        request.getShippingRequest().getTotal_bill());
+                newOrder.setStatus(OrderStatus.DONE.toString());
+            }
+            orderRepository.save(newOrder);
+            //--- xu ly van chuyen--------//
+
+            if(ObjectUtils.isEmpty(carrierRepository.findCarrierByShortname(request.getShippingRequest().getCarrier()))){
+                throw new ResourceNotFoundException("Khong tim thay carrirer");
+            }
+            ShippingDetails shippingDetails = new ShippingDetails();
+            shippingDetails.setCarrier(carrierRepository.findCarrierByShortname(request.getShippingRequest().getCarrier()));
+            shippingDetails.setOrderDetails(newOrder);
+            shippingDetails.setCreatedAt(new Date());
+            shippingDetails.setFee_ship(request.getShippingRequest().getFee_ship());
+            shippingDetails.setExpected(request.getShippingRequest().getExpected());
+            shippingDetails.setPhone(request.getShippingRequest().getPhone());
+            shippingDetails.setStatus("Đơn mới");
+            shippingDetails.setTotal_bill(request.getShippingRequest().getTotal_bill());
+            shippingDetails.setCode(request.getShippingRequest().getCode());
+            shippingDetails.setService(request.getShippingRequest().getService());
+            shippingDetailsRepo.save(shippingDetails);
+//            shippingDetails.setCode(RandomCode.);
+            ///--------------------------////
+            cartService.removeCart(username);
+            return result;
         }else{
             throw new ResourceNotFoundException("gio hang cua user : " + username + " ko ton tai!!");
         }
-
-        orderRepository.save(newOrder);
-        cartService.removeCart(username);
-        return "done";
     }
 
     @Override

@@ -39,11 +39,11 @@ public class AdminController {
                                                       @RequestParam Long userId){
         return ResponseEntity.ok(adminService.addCart(userId,request));
     }
-    @PostMapping("/create/order")
-    public ResponseEntity<String> createOrder(@RequestBody OrderRequest orderRequest,
-                                              HttpServletRequest httpServletRequest){
-        return ResponseEntity.ok(adminService.createOrder(httpServletRequest.getHeader("x-client-username"),orderRequest));
-    }
+//    @PostMapping("/create/order")
+//    public ResponseEntity<String> createOrder(@RequestBody OrderRequest orderRequest,
+//                                              HttpServletRequest httpServletRequest){
+//        return ResponseEntity.ok(adminService.createOrder(httpServletRequest.getHeader("x-client-username"),orderRequest));
+//    }
     @GetMapping("/getAllUser")
     public ResponseEntity<List<User>> getAllUser(){
         return ResponseEntity.ok(adminService.getAllUser());
@@ -56,8 +56,8 @@ public class AdminController {
     public ResponseEntity<List<ProductSku>> getAllSku(@PathVariable("idSpu")Long idSpu){
         return ResponseEntity.ok(adminService.getAllSku(idSpu));
     }
-    @PostMapping("/createFlashOrder")
-    public ResponseEntity<String> createFlashOrder(@RequestBody FlashOrderRequest request){
-        return ResponseEntity.ok(adminService.createFlashOrder(request));
-    }
+//    @PostMapping("/createFlashOrder")
+//    public ResponseEntity<String> createFlashOrder(@RequestBody FlashOrderRequest request){
+//        return ResponseEntity.ok(adminService.createFlashOrder(request));
+//    }
 }

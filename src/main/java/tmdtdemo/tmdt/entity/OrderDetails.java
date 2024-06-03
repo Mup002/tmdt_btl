@@ -36,15 +36,21 @@ public class OrderDetails {
     @ManyToOne
     @JoinColumn(name = "method_id")
     private PaymentMethod paymentMethod;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-
     private Date createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = new Date();
     }
+
+
 }

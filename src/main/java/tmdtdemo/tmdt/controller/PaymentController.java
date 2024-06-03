@@ -19,15 +19,25 @@ import tmdtdemo.tmdt.utils.BaseResponse;
 public class PaymentController {
     private final PaymentService paymentService;
     @GetMapping("/vn-pay")
-    public ResponseEntity<PaymentDTO> pay(HttpServletRequest request) {
-        return ResponseEntity.ok(paymentService.createVnPayPayment(request));
+    public ResponseEntity<BaseResponse> pay(HttpServletRequest request) {
+        String ip = request.getHeader("X-FORWARDED-FOR");
+        if(ip == null){
+            ip =  request.getRemoteAddr();
+        }
+        return ResponseEntity.ok(BaseResponse.builder()
+                .code(HttpStatus.OK.toString())
+                .message(paymentService.createVnPayPayment(request.getParameter("orderCode")
+                        ,request.getParameter("bankCode"),ip,Long.valueOf(request.getParameter("totalOrder"))).toString()).build());
+//        return ResponseEntity.ok(BaseResponse.builder()
+//                .code(HttpStatus.OK.toString())
+//                .message(paymentService.createVnPayPayment(request).toString()).build());
     }
-    @GetMapping("/vn-pay-callback")
-    public ResponseEntity<BaseResponse> payCallbackHandler(HttpServletRequest request,
-                                                           @RequestParam String orderCode) {
-        String status = request.getParameter("vnp_ResponseCode");
-        return ResponseEntity.ok(paymentService.paymentStatus(status,orderCode));
-    }
+//    @GetMapping("/vn-pay-callback")
+//    public ResponseEntity<BaseResponse> payCallbackHandler(HttpServletRequest request,
+//                                                           @RequestParam String orderCode) {
+//        String status = request.getParameter("vnp_ResponseCode");
+//        return ResponseEntity.ok(paymentService.paymentStatus(status,orderCode));
+//    }
 }
 //
 /// if (status.equals("00")) {

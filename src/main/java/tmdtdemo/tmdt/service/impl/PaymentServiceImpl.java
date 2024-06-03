@@ -21,48 +21,44 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private final VNPAYConfig vnPayConfig;
-    private final OrderService orderService;
+//    private final OrderService orderService;
     @Override
-    public PaymentDTO createVnPayPayment(HttpServletRequest request) {
-        String orderCode = request.getParameter("orderCode");
-        if(!orderService.getOrderCodeExits(orderCode)){
-            throw new ResourceNotFoundException("This order not found");
-        }else{
-            OrderDetails orderDetails = orderService.getOrderByCode(orderCode);
-            long amount = orderDetails.getTotal() * 100;
-            String bankCode = request.getParameter("bankCode");
-            Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig(orderCode);
-            vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
-            if (bankCode != null && !bankCode.isEmpty()) {
-                vnpParamsMap.put("vnp_BankCode", bankCode);
-            }
-            vnpParamsMap.put("vnp_IpAddr", VNPayUtil.getIpAddress(request));
-            //build query url
-            String queryUrl = VNPayUtil.getPaymentURL(vnpParamsMap, true);
-            String hashData = VNPayUtil.getPaymentURL(vnpParamsMap, false);
-            String vnpSecureHash = VNPayUtil.hmacSHA512(vnPayConfig.getSecretKey(), hashData);
-            queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
-            String paymentUrl = vnPayConfig.getVnp_PayUrl() + "?" + queryUrl;
-            PaymentDTO paymentDTO = new PaymentDTO();
-            paymentDTO.setCode("ok");
-            paymentDTO.setMessage("success");
-            paymentDTO.setPaymentUrl(paymentUrl);
-            return paymentDTO;
+    public String createVnPayPayment(String orderCode, String bankCode, String ipAddress, Long totalOrder) {
+//        if(!orderService.getOrderCodeExits(orderCode)){
+//            throw new ResourceNotFoundException("This order not found");
+//        }else{
+//            OrderDetails orderDetails = orderService.getOrderByCode(orderCode);
+//
+//        }
+
+        long amount = totalOrder * 100;
+        Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig(orderCode);
+        vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
+        if (bankCode != null && !bankCode.isEmpty()) {
+            vnpParamsMap.put("vnp_BankCode", bankCode);
         }
+        vnpParamsMap.put("vnp_IpAddr",ipAddress);
+        //build query url
+        String queryUrl = VNPayUtil.getPaymentURL(vnpParamsMap, true);
+        String hashData = VNPayUtil.getPaymentURL(vnpParamsMap, false);
+        String vnpSecureHash = VNPayUtil.hmacSHA512(vnPayConfig.getSecretKey(), hashData);
+        queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
+        String paymentUrl = vnPayConfig.getVnp_PayUrl() + "?" + queryUrl;
+        return paymentUrl;
     }
 
-    @Override
-    public BaseResponse paymentStatus(String status, String orderCode) {
-        if(status.equals("00")) {
-            String paymentStatus = orderService.changePaymentStatus(orderCode);
-            return  BaseResponse
-                    .builder()
-                    .code(HttpStatus.OK.toString())
-                    .message("Payment " + paymentStatus).build();
-        }
-        return BaseResponse
-                .builder()
-                .code(HttpStatus.BAD_REQUEST.toString())
-                .message("Payment failed").build();
-    }
+//    @Override
+//    public BaseResponse paymentStatus(String status, String orderCode) {
+//        if(status.equals("00")) {
+//            String paymentStatus = orderService.changePaymentStatus(orderCode);
+//            return  BaseResponse
+//                    .builder()
+//                    .code(HttpStatus.OK.toString())
+//                    .message("Payment " + paymentStatus).build();
+//        }
+//        return BaseResponse
+//                .builder()
+//                .code(HttpStatus.BAD_REQUEST.toString())
+//                .message("Payment failed").build();
+//    }
 }

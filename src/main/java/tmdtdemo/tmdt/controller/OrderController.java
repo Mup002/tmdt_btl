@@ -19,10 +19,15 @@ public class OrderController {
     private final OrderService orderService;
     @PostMapping("/new")
     public ResponseEntity<BaseResponse> newOrder(@RequestBody OrderRequest orderRequest, HttpServletRequest httpServletRequest){
+        String ip = httpServletRequest.getHeader("X-FORWARDED-FOR");
+        if(ip == null){
+            ip =  httpServletRequest.getRemoteAddr();
+        }
+//        String ip = httpServletRequest.getHeader("X-FORWARDED-FOR") != null ? httpServletRequest.getHeader("X-FORWARDED-FOR") : httpServletRequest.getRemoteAddr()  ;
         return ResponseEntity.ok(
                 BaseResponse.builder()
                         .code(HttpStatus.OK.toString())
-                        .message(orderService.newOrder(httpServletRequest.getHeader("x-client-username"),orderRequest )).build()
+                        .message(orderService.newOrder(httpServletRequest.getHeader("x-client-username"),orderRequest, ip )).build()
         );
     }
 }
