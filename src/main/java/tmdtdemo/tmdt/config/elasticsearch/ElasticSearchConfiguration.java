@@ -1,6 +1,5 @@
 package tmdtdemo.tmdt.config.elasticsearch;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -14,6 +13,8 @@ import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.RestHighLevelClientBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,15 +27,14 @@ import java.security.NoSuchAlgorithmException;
 public class ElasticSearchConfiguration
 {
     @Bean
-    public RestClient getResClient() throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+    public RestHighLevelClient getRestHigh() throws  NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY,
                 new UsernamePasswordCredentials("elastic","VhCklKZqrv2I3bco09_0"));
         SSLContext sslContext = SSLContextBuilder.create()
                 .loadTrustMaterial((chain,authType) -> true)
                 .build();
-        RestClientBuilder restClient = RestClient.builder(
-                        new HttpHost("localhost", 9200, "https")) // Change to HTTPS
+        RestClientBuilder builder = RestClient.builder(new HttpHost("localhost", 9200, "https")) // Change to HTTPS
                 .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
                     @Override
                     public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
@@ -47,18 +47,43 @@ public class ElasticSearchConfiguration
                                         .build());
                     }
                 });
-        return restClient.build();
+
+        return new RestHighLevelClient(builder);
     }
-    @Bean
-    ElasticsearchTransport getElasticsearchTransport() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        return new RestClientTransport(
-                getResClient(),new JacksonJsonpMapper()
-        );
-    }
-    @Bean
-    public ElasticsearchClient getElasticsearchClient() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        ElasticsearchClient client = new ElasticsearchClient(getElasticsearchTransport());
-        return client;
-    }
+//    @Bean
+//    public RestClient getResClient() throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+//        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+//        credentialsProvider.setCredentials(AuthScope.ANY,
+//                new UsernamePasswordCredentials("elastic","VhCklKZqrv2I3bco09_0"));
+//        SSLContext sslContext = SSLContextBuilder.create()
+//                .loadTrustMaterial((chain,authType) -> true)
+//                .build();
+//        RestClientBuilder restClient = RestClient.builder(
+//                        new HttpHost("localhost", 9200, "https")) // Change to HTTPS
+//                .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+//                    @Override
+//                    public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+//                        return httpClientBuilder
+//                                .setDefaultCredentialsProvider(credentialsProvider)
+//                                .setSSLContext(sslContext)
+//                                .setDefaultIOReactorConfig(IOReactorConfig.custom()
+//                                        .setIoThreadCount(1)
+//                                        .setSoTimeout(60000)
+//                                        .build());
+//                    }
+//                });
+//        return restClient.build();
+//    }
+//    @Bean
+//    ElasticsearchTransport getElasticsearchTransport() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+//        return new RestClientTransport(
+//                getRestHigh(),new JacksonJsonpMapper()
+//        );
+//    }
+//    @Bean
+//    public ElasticsearchClient getElasticsearchClient() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+//        ElasticsearchClient client = new ElasticsearchClient(getElasticsearchTransport());
+//        return client;
+//    }
 
 }

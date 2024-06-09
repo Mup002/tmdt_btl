@@ -1,14 +1,17 @@
 package tmdtdemo.tmdt.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import tmdtdemo.tmdt.dto.response.*;
 import tmdtdemo.tmdt.entity.ProductSku;
 import tmdtdemo.tmdt.entity.ProductSpu;
+import tmdtdemo.tmdt.exception.BaseException;
 import tmdtdemo.tmdt.repository.ImageRepository;
 import tmdtdemo.tmdt.repository.ProductSkuRepo;
 import tmdtdemo.tmdt.repository.ProductSpuRepo;
@@ -44,6 +47,9 @@ public class ProductServiceImpl implements ProductService {
         List<ProductSpuResponse> responses = new ArrayList<>();
         for(ProductSpu spu : productSpuList){
             Double minprice = productSkuRepo.findMinPriceByProductSpuId(spu.getId());
+            if(ObjectUtils.isEmpty(imageRepository.findImagesBySpuId(spu.getId()).get(0).getSrc())){
+                throw new BaseException(HttpStatus.BAD_REQUEST.toString(),"Anh null");
+            }
             ProductSpuResponse spuResponse = Mapper.productspuToResponse(spu,imageRepository.findImagesBySpuId(spu.getId()).get(0).getSrc(),minprice);
             responses.add(spuResponse);
         }

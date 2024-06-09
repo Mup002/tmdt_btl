@@ -39,6 +39,8 @@ public class CartServiceImpl implements CartService {
         response.setQuantity(cartRequest.getQuantity());
         response.setProductSku_name(productSkuRepo.findProductSkuById(cartRequest.getIdSku()).getColor());
         response.setProductSpu_name(productSpuRepo.findProductSpuById(cartRequest.getIdSpu()).getName());
+        response.setIdSku(cartRequest.getIdSku());
+        response.setIdSpu(cartRequest.getIdSpu());
         Image image = imageRepository.findImageBySpuIdAndSkuId(
                 productSpuRepo.findProductSpuById(cartRequest.getIdSpu()).getId(),
                 productSkuRepo.findProductSkuById(cartRequest.getIdSku()).getId());
@@ -47,16 +49,23 @@ public class CartServiceImpl implements CartService {
         }else{
             response.setSrc(image.getSrc());
         }
-//        response.setSrc(imageRepository.findImageBySpuIdAndSkuId(
-//                productSpuRepo.findProductSpuById(cartRequest.getIdSpu()).getId(),
-//                productSkuRepo.findProductSkuById(cartRequest.getIdSku()).getId()
-//        ).getSrc());
 
         if(!baseRedisService.hashExists(keyCart,"cartData")){
             cartList.add(response);
         }else{
             cartList = ChangeObject.jsonToListObject(baseRedisService.hashGet(keyCart,"cartData").toString(),CartResponse.class);
-            cartList.add(response);
+            int check = 0;
+            for(CartResponse cartResponse : cartList){
+                if(cartResponse.getIdSpu() == response.getIdSpu() && cartResponse.getIdSku() == response.getIdSku()){
+                    cartResponse.setQuantity(cartResponse.getQuantity() + response.getQuantity());
+                    check = 1;
+                    break;
+                }
+            }
+            if(check == 0){
+                cartList.add(response);
+            }
+
         }
         baseRedisService.hashSet(keyCart,"cartData", ChangeObject.listObjectToJson(cartList));
         baseRedisService.setTimeToLive(keyCart,5*60*60);
@@ -82,5 +91,26 @@ public class CartServiceImpl implements CartService {
         String keyCart = HelperUtils.cartBuilderRedisKey(user.getUsername());
         baseRedisService.delete(keyCart,"cartData");
         return "done";
+    }
+
+    @Override
+    public List<CartResponse> removeItem(String username, Long skuId, Long spuId) {
+        User user = userRepository.findUserByUsername(username);
+        String keyCart = HelperUtils.cartBuilderRedisKey(username);
+        List<CartResponse> responses = new ArrayList<>();
+        if(baseRedisService.hashExists(keyCart,"cartData")){
+            responses =  ChangeObject.jsonToListObject(baseRedisService.hashGet(keyCart,"cartData").toString(),CartResponse.class);
+            for(CartResponse cartResponse : responses){
+                if(cartResponse.getIdSku() == skuId && cartResponse.getIdSpu() == spuId){
+                    responses.remove(cartResponse);
+                    break;
+                }
+            }
+            baseRedisService.hashSet(keyCart,"cartData", ChangeObject.listObjectToJson(responses));
+            baseRedisService.setTimeToLive(keyCart,5*60*60);
+        }else{
+            throw new ResourceNotFoundException("Khong tim thay gio hang cua " + username);
+        }
+        return responses ;
     }
 }

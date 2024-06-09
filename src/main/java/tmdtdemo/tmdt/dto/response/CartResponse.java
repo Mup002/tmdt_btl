@@ -9,5 +9,6 @@ public class CartResponse {
     private String src;
     private Long quantity;
     private Long price;
-
+    private Long idSku;
+    private Long idSpu;
 }
