@@ -47,18 +47,18 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentUrl;
     }
 
-//    @Override
-//    public BaseResponse paymentStatus(String status, String orderCode) {
-//        if(status.equals("00")) {
+    @Override
+    public BaseResponse paymentStatus(String status, String orderCode) {
+        if(status.equals("00")) {
 //            String paymentStatus = orderService.changePaymentStatus(orderCode);
-//            return  BaseResponse
-//                    .builder()
-//                    .code(HttpStatus.OK.toString())
-//                    .message("Payment " + paymentStatus).build();
-//        }
-//        return BaseResponse
-//                .builder()
-//                .code(HttpStatus.BAD_REQUEST.toString())
-//                .message("Payment failed").build();
-//    }
+            return  BaseResponse
+                   .builder()
+                    .code(HttpStatus.OK.toString())
+                   .message("Payment successfully" ).build();
+       }
+        return BaseResponse
+                .builder()
+                .code(HttpStatus.BAD_REQUEST.toString())
+                .message("Payment failed").build();
+   }
 }

@@ -6,5 +6,5 @@ import tmdtdemo.tmdt.utils.BaseResponse;
 public interface PaymentService {
      String createVnPayPayment(String orderCode, String bankCode,String ipAddress, Long totalOrder);
 //     String createVnPayPayment(HttpServletRequest request);
-//     BaseResponse paymentStatus(String status, String orderCode);
+     BaseResponse paymentStatus(String status, String orderCode);
 }

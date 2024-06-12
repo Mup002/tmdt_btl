@@ -32,16 +32,16 @@ public class PaymentController {
 //                .code(HttpStatus.OK.toString())
 //                .message(paymentService.createVnPayPayment(request).toString()).build());
     }
-//    @GetMapping("/vn-pay-callback")
-//    public ResponseEntity<BaseResponse> payCallbackHandler(HttpServletRequest request,
-//                                                           @RequestParam String orderCode) {
-//        String status = request.getParameter("vnp_ResponseCode");
-//        return ResponseEntity.ok(paymentService.paymentStatus(status,orderCode));
-//    }
+   @GetMapping("/vn-pay-callback")
+    public ResponseEntity<BaseResponse> payCallbackHandler(HttpServletRequest request,
+                                                         @RequestParam String orderCode) {
+       String status = request.getParameter("vnp_ResponseCode");
+       return ResponseEntity.ok(paymentService.paymentStatus(status,orderCode));
+   }
 }
-//
-/// if (status.equals("00")) {
-//            return new ResponseEntity<>(HttpStatus.OK, "Success",
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST, "Failed", null);
-//        }
+
+// if (status.equals("00")) {
+//           return new ResponseEntity<>(HttpStatus.OK, "Success",
+//       } else {
+//           return new ResponseEntity<>(HttpStatus.BAD_REQUEST, "Failed", null);
+//     }
