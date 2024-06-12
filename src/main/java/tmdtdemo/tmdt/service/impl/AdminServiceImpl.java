@@ -4,14 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tmdtdemo.tmdt.MapData.OrderDetailMapper;
 import tmdtdemo.tmdt.common.OrderStatus;
+import tmdtdemo.tmdt.common.PaymentStatus;
 import tmdtdemo.tmdt.dto.request.CartRequest;
 import tmdtdemo.tmdt.dto.request.FlashOrderRequest;
 import tmdtdemo.tmdt.dto.request.OrderRequest;
 import tmdtdemo.tmdt.dto.request.UserRequest;
 import tmdtdemo.tmdt.dto.response.CartResponse;
+import tmdtdemo.tmdt.dto.response.OrderDetailResponse;
 import tmdtdemo.tmdt.entity.*;
 import tmdtdemo.tmdt.exception.BaseException;
+import tmdtdemo.tmdt.exception.ResourceNotFoundException;
 import tmdtdemo.tmdt.repository.*;
 import tmdtdemo.tmdt.service.*;
 import tmdtdemo.tmdt.utils.AppConstants;
@@ -48,12 +52,6 @@ public class AdminServiceImpl implements AdminService {
         return cartService.addCart(request,userRepository.findUserById(userID).getUsername());
     }
     @Override
-    public String createOrder(String username, OrderRequest request) {
-//        return orderService.newOrder(username,request);
-        return null;
-    }
-
-    @Override
     public List<User> getAllUser() {
         return userService.getAllUserRole();
     }
@@ -78,6 +76,7 @@ public class AdminServiceImpl implements AdminService {
         orderDetails.setPaymentMethod(paymentMethodRepo.findPaymentMethodById(request.getPayment_id()));
         orderDetails.setTotal(request.getTotal());
         orderDetails.setStatus(OrderStatus.DONE.toString());
+        orderDetails.setPayment_status(PaymentStatus.DONE.toString());
         orderDetails.setCreatedAt(DateFormat.convertStringToDate(request.getCreatedAt()));
         List<ProductSku> productSkuList = new ArrayList<>();
         List<ProductSpu> productSpuList = new ArrayList<>();
@@ -117,5 +116,33 @@ public class AdminServiceImpl implements AdminService {
 
 
         return "done";
+    }
+
+    @Override
+    public String changeOrderStatus(String orderCode, String status) {
+        if(Arrays.stream(OrderStatus.values()).anyMatch(
+                os -> os.name().equalsIgnoreCase(status)
+        )){
+            OrderDetails orderDetails = orderRepository.findOrderDetailsByCode(orderCode);
+            orderDetails.setStatus(status);
+            return "done";
+        }else{
+            throw new ResourceNotFoundException("status not found");
+        }
+
+    }
+
+    @Override
+    public List<String> getAllStatus() {
+        List<String > result = new ArrayList<>();
+        for(OrderStatus s : OrderStatus.values()){
+            result.add(s.toString());
+        }
+        return result;
+    }
+
+    @Override
+    public List<OrderDetailResponse> allOrderDetails() {
+        return OrderDetailMapper.INSTANCE.orderToLstDetailsResponse(orderRepository.findAll());
     }
 }

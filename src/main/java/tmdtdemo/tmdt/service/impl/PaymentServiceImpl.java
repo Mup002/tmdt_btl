@@ -6,11 +6,14 @@ import org.json.HTTP;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import tmdtdemo.tmdt.common.OrderStatus;
+import tmdtdemo.tmdt.common.PaymentStatus;
 import tmdtdemo.tmdt.config.payment.VNPAYConfig;
 import tmdtdemo.tmdt.dto.response.PaymentDTO;
 import tmdtdemo.tmdt.entity.OrderDetails;
 import tmdtdemo.tmdt.exception.BaseException;
 import tmdtdemo.tmdt.exception.ResourceNotFoundException;
+import tmdtdemo.tmdt.repository.OrderRepository;
 import tmdtdemo.tmdt.service.OrderService;
 import tmdtdemo.tmdt.service.PaymentService;
 import tmdtdemo.tmdt.utils.BaseResponse;
@@ -21,7 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private final VNPAYConfig vnPayConfig;
-//    private final OrderService orderService;
+    private final OrderRepository orderRepository;
     @Override
     public String createVnPayPayment(String orderCode, String bankCode, String ipAddress, Long totalOrder) {
 //        if(!orderService.getOrderCodeExits(orderCode)){
@@ -50,11 +53,13 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public BaseResponse paymentStatus(String status, String orderCode) {
         if(status.equals("00")) {
-//            String paymentStatus = orderService.changePaymentStatus(orderCode);
+            OrderDetails orderDetails = orderRepository.findOrderDetailsByCode(orderCode);
+            orderDetails.setPayment_status(PaymentStatus.DONE.toString());
+            orderRepository.save(orderDetails);
             return  BaseResponse
                    .builder()
                     .code(HttpStatus.OK.toString())
-                   .message("Payment successfully" ).build();
+                   .message("Payment " + orderCode +" successfully" ).build();
        }
         return BaseResponse
                 .builder()

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import tmdtdemo.tmdt.common.OrderStatus;
+import tmdtdemo.tmdt.common.PaymentStatus;
 import tmdtdemo.tmdt.dto.request.OrderRequest;
 import tmdtdemo.tmdt.dto.response.CartResponse;
 import tmdtdemo.tmdt.dto.response.OrderResponse;
@@ -97,21 +98,25 @@ public class OrderServiceImpl implements OrderService {
             }
             //----Xu ly payment method --////
 
+            //--- set trang thai mac dinh don hang---///
+            newOrder.setStatus(OrderStatus.WAITING.toString());
+            ///------ket thuc set trang thai--------///
+
             /// truong hop tra sau / ship
             newOrder.setPaymentMethod(paymentMethodRepo.findPaymentMethodById(request.getPayment_id()));
             if(request.getPayment_id()== 1){
-                newOrder.setStatus(OrderStatus.WAITING.toString());
+               newOrder.setPayment_status(PaymentStatus.WAITING.toString());
             }else if(request.getPayment_id() == 2){
                 result = paymentService.createVnPayPayment(request.getOrdercode(),
                         "NCB",
                         ipAddress,
                         request.getShippingRequest().getTotal_bill());
-                newOrder.setStatus(OrderStatus.DONE.toString());
+                newOrder.setPayment_status(PaymentStatus.WAITING.toString());
             }
             orderRepository.save(newOrder);
             //--- xu ly van chuyen--------//
 
-            if(ObjectUtils.isEmpty(carrierRepository.findCarrierByShortname(request.getShippingRequest().getCarrier()))){
+            if(ObjectUtils.isEmpty(carrierRepository.findCarrierByCarrier(request.getShippingRequest().getCarrier()))){
                 throw new ResourceNotFoundException("Khong tim thay carrirer");
             }
             ShippingDetails shippingDetails = new ShippingDetails();
@@ -160,7 +165,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public String changePaymentStatus(String code) {
         OrderDetails orderDetails = orderRepository.findOrderDetailsByCode(code);
-        orderDetails.setStatus(OrderStatus.DONE.toString());
+        orderDetails.setPayment_status(PaymentStatus.DONE.toString());
         orderRepository.save(orderDetails);
         return "done";
     }

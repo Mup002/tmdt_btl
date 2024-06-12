@@ -4,6 +4,7 @@ package tmdtdemo.tmdt.controller.admin;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tmdtdemo.tmdt.dto.request.CartRequest;
@@ -11,6 +12,7 @@ import tmdtdemo.tmdt.dto.request.FlashOrderRequest;
 import tmdtdemo.tmdt.dto.request.OrderRequest;
 import tmdtdemo.tmdt.dto.request.UserRequest;
 import tmdtdemo.tmdt.dto.response.CartResponse;
+import tmdtdemo.tmdt.dto.response.OrderDetailResponse;
 import tmdtdemo.tmdt.entity.ProductSku;
 import tmdtdemo.tmdt.entity.ProductSpu;
 import tmdtdemo.tmdt.entity.User;
@@ -39,11 +41,6 @@ public class AdminController {
                                                       @RequestParam Long userId){
         return ResponseEntity.ok(adminService.addCart(userId,request));
     }
-    @PostMapping("/create/order")
-    public ResponseEntity<String> createOrder(@RequestBody OrderRequest orderRequest,
-                                              HttpServletRequest httpServletRequest){
-        return ResponseEntity.ok(adminService.createOrder(httpServletRequest.getHeader("x-client-username"),orderRequest));
-    }
     @GetMapping("/getAllUser")
     public ResponseEntity<List<User>> getAllUser(){
         return ResponseEntity.ok(adminService.getAllUser());
@@ -59,5 +56,24 @@ public class AdminController {
     @PostMapping("/createFlashOrder")
     public ResponseEntity<String> createFlashOrder(@RequestBody FlashOrderRequest request){
         return ResponseEntity.ok(adminService.createFlashOrder(request));
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<List<String>> getAllOrderStatus(){
+        return ResponseEntity.ok(adminService.getAllStatus());
+    }
+
+    @PostMapping("/changOrderStatus")
+    public ResponseEntity<BaseResponse> change(
+            @RequestParam String orderCode,
+            @RequestParam String status
+    ){
+        return ResponseEntity.ok(BaseResponse.builder()
+                .code(HttpStatus.OK.toString())
+                .message(adminService.changeOrderStatus(orderCode,status)).build());
+    }
+    @GetMapping("/allOrderDetails")
+    public ResponseEntity<List<OrderDetailResponse>> getAllOrder(){
+        return ResponseEntity.ok(adminService.allOrderDetails());
     }
 }

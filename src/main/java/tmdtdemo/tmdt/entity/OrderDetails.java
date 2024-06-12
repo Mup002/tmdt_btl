@@ -1,5 +1,6 @@
 package tmdtdemo.tmdt.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,6 +18,9 @@ public class OrderDetails {
 
     private Long total;
     private String status;
+
+    @Nullable
+    private String payment_status;
 
     @Column(name = "order_code")
     private String code;

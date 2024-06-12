@@ -9,7 +9,8 @@ public class RequestURL {
             "/api/v1/product/**",
             "/api/v1/payment/vn-pay-callback",
             "/api/v1/search/**",
-            "/api/v1/address/**"
+            "/api/v1/address/**",
+            "/api/v1/report/**"
 
     };
      protected static String[] SECURED_URLS_ROLE_USER = {
