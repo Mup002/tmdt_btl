@@ -10,10 +10,7 @@ import tmdtdemo.tmdt.dto.request.FlashOrderRequest;
 import tmdtdemo.tmdt.dto.request.OrderRequest;
 import tmdtdemo.tmdt.dto.request.UserRequest;
 import tmdtdemo.tmdt.dto.response.CartResponse;
-import tmdtdemo.tmdt.entity.OrderDetails;
-import tmdtdemo.tmdt.entity.ProductSku;
-import tmdtdemo.tmdt.entity.ProductSpu;
-import tmdtdemo.tmdt.entity.User;
+import tmdtdemo.tmdt.entity.*;
 import tmdtdemo.tmdt.exception.BaseException;
 import tmdtdemo.tmdt.repository.*;
 import tmdtdemo.tmdt.service.*;
@@ -36,6 +33,10 @@ public class AdminServiceImpl implements AdminService {
     private final ProductSpuRepo productSpuRepo;
     private final ProductSkuRepo productSkuRepo;
     private final OrderRepository orderRepository;
+    private final AddressRepository addressRepository;
+    private final ShippingDetailsRepo shippingDetailsRepo;
+    private final AddressService addressService;
+    private final CarrierRepository carrierRepository;
 
     @Override
     public BaseResponse createUser(UserRequest request) {
@@ -72,7 +73,8 @@ public class AdminServiceImpl implements AdminService {
     public String createFlashOrder(FlashOrderRequest request) {
         OrderDetails orderDetails = new OrderDetails();
         orderDetails.setUser(userService.findUserByUsername(request.getUsername()));
-        orderDetails.setCode(RandomCode.genarateCodeForOrder());
+//        orderDetails.setCode(RandomCode.genarateCodeForOrder());
+        orderDetails.setCode(request.getOrdercode());
         orderDetails.setPaymentMethod(paymentMethodRepo.findPaymentMethodById(request.getPayment_id()));
         orderDetails.setTotal(request.getTotal());
         orderDetails.setStatus(OrderStatus.DONE.toString());
@@ -93,9 +95,27 @@ public class AdminServiceImpl implements AdminService {
                 throw new BaseException(String.valueOf(HttpStatus.BAD_REQUEST),"Khong du so luong san pham de thuc hien " + sku.getId());
             }
         }
+
+        orderDetails.setAddress(addressRepository.findAddressById(addressService.addIfDontExist(request.getAddressRequest())));
+
         orderDetails.setProductSkus(productSkuList);
         orderDetails.setProductSpus(productSpuList);
         orderRepository.save(orderDetails);
+
+        ShippingDetails shippingDetails = new ShippingDetails();
+        shippingDetails.setCarrier(carrierRepository.findCarrierByCarrier(request.getShippingRequest().getCarrier()));
+        shippingDetails.setOrderDetails(orderDetails);
+        shippingDetails.setCreatedAt(new Date());
+        shippingDetails.setFee_ship(request.getShippingRequest().getFee_ship());
+        shippingDetails.setExpected(request.getShippingRequest().getExpected());
+        shippingDetails.setPhone(request.getShippingRequest().getPhone());
+        shippingDetails.setStatus("Đơn mới");
+        shippingDetails.setTotal_bill(request.getShippingRequest().getTotal_bill());
+        shippingDetails.setCode(request.getShippingRequest().getCode());
+        shippingDetails.setService(request.getShippingRequest().getService());
+        shippingDetailsRepo.save(shippingDetails);
+
+
         return "done";
     }
 }

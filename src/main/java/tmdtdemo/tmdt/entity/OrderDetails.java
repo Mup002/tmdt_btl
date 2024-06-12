@@ -47,10 +47,10 @@ public class OrderDetails {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Date();
-    }
+//    @PrePersist
+//    protected void onCreate() {
+//        this.createdAt = new Date();
+//    }
 
 
 }

@@ -11,5 +11,9 @@ public class FlashOrderRequest {
     private String createdAt;
     private Long total;
     private Long payment_id;
+    private String ordercode;
     private  List<CartRequest> carts = new ArrayList<>();
+
+    private AddressRequest addressRequest ;
+    private ShippingRequest shippingRequest;
 }

@@ -7,4 +7,5 @@ import tmdtdemo.tmdt.entity.Carrier;
 @Repository
 public interface CarrierRepository extends JpaRepository<Carrier,Long> {
     Carrier findCarrierByShortname(String shortname);
+    Carrier findCarrierByCarrier(String carrier);
 }
