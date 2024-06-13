@@ -18,4 +18,10 @@ public interface OrderSkuRepo extends JpaRepository<OrderSku,Long> {
 
     @Query(value = "SELECT os.sku_id FROM orderskus os JOIN orderdetails od ON os.orderdetail_id = od.orderdetail_id WHERE od.status = 'DONE' AND od.created_at BETWEEN :startDate AND :endDate", nativeQuery = true)
     List<Long> findSkuIdsByOrderDetailsCreatedAtBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    @Query(value = "SELECT SUM(osk.quantity) " +
+            "FROM orderskus osk " +
+            "JOIN productskus psk ON osk.sku_id = psk.productsku_id " +
+            "WHERE psk.productspu_id = :productSpuId", nativeQuery = true)
+    Long sumTotalQuantityByProductSpuId(@Param("productSpuId") Long productSpuId);
 }

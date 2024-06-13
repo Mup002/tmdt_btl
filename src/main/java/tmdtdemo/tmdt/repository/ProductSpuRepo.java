@@ -20,4 +20,13 @@ public interface ProductSpuRepo extends JpaRepository<ProductSpu ,Long> {
 
     @Query(value = "SELECT ps.type FROM productspus ps JOIN productskus psk ON ps.productspu_id = psk.productspu_id WHERE psk.productsku_id = :skuId", nativeQuery = true)
     String findTypeByProductSkuId(@Param("skuId") Long skuId);
+
+    @Query(value = "SELECT ps.productspu_name " +
+            "FROM productspus ps " +
+            "JOIN productskus psk ON ps.productspu_id = psk.productspu_id " +
+            "JOIN orderskus osk ON psk.productsku_id = osk.sku_id " +
+            "GROUP BY ps.productspu_id " +
+            "ORDER BY SUM(osk.quantity) DESC " +
+            "LIMIT 10", nativeQuery = true)
+    List<String> findTop10ProductSpuNamesByTotalQuantity();
 }

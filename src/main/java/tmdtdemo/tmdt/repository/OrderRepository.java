@@ -41,4 +41,7 @@ public interface OrderRepository extends JpaRepository<OrderDetails,Long> {
 
     @Query("SELECT COUNT(*) FROM OrderDetails where status = 'CANCELED'and createdAt between :startDate and :endDate")
     Long countOrderFail(@Param("startDate")Date startDate,@Param("endDate")Date endDate);
+
+    @Query(value = "SELECT SUM(o.total) FROM orderdetails o WHERE o.user_id = :userId", nativeQuery = true)
+    Long findTotalByUserId(@Param("userId") Long userId);
 }

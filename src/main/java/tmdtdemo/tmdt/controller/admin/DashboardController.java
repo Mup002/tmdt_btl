@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tmdtdemo.tmdt.dto.response.DashboardResponseForAllMonth;
 import tmdtdemo.tmdt.dto.response.DashboardResponseForDay;
 import tmdtdemo.tmdt.dto.response.DashboardResponseForMonth;
 import tmdtdemo.tmdt.service.DashboardService;
@@ -30,5 +31,9 @@ public class DashboardController {
                     @RequestParam("end") @DateTimeFormat(pattern = "yyyy-MM-dd") Date end
             ){
         return ResponseEntity.ok(dashboardService.getReportByDay(start,end));
+    }
+    @PostMapping("/forAllMonth")
+    public ResponseEntity<DashboardResponseForAllMonth> forAllMonth(){
+        return ResponseEntity.ok(dashboardService.getReportAllMont());
     }
 }

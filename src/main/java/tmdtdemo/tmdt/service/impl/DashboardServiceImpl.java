@@ -2,11 +2,15 @@ package tmdtdemo.tmdt.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.stat.descriptive.summary.Product;
 import org.springframework.stereotype.Service;
+import tmdtdemo.tmdt.dto.response.DashboardResponseForAllMonth;
 import tmdtdemo.tmdt.dto.response.DashboardResponseForDay;
 import tmdtdemo.tmdt.dto.response.DashboardResponseForMonth;
 import tmdtdemo.tmdt.entity.DailyRevenue;
+import tmdtdemo.tmdt.entity.ProductSpu;
 import tmdtdemo.tmdt.entity.ResultRevenue;
+import tmdtdemo.tmdt.entity.User;
 import tmdtdemo.tmdt.repository.*;
 import tmdtdemo.tmdt.service.DashboardService;
 
@@ -25,6 +29,8 @@ public class DashboardServiceImpl implements DashboardService {
     private final OrderSkuRepo orderSkuRepol;
     private final ProductSpuRepo productSpuRepo;
     private final DailyRevenueRepo dailyRevenueRepo;
+    private final UserRepository userRepository;
+    private final ProductSkuRepo productSkuRepo;
     @Override
     public DashboardResponseForMonth getReportByMonth(int month, int year) {
         DashboardResponseForMonth response_current = new DashboardResponseForMonth();
@@ -150,6 +156,27 @@ public class DashboardServiceImpl implements DashboardService {
         response.setProfit_by_day(profit_by_day);
         response.setRevenue_by_day(revenue_by_day);
 
+        return response;
+    }
+
+    @Override
+    public DashboardResponseForAllMonth getReportAllMont() {
+        DashboardResponseForAllMonth response = new DashboardResponseForAllMonth();
+        //chart 1
+        Map<String, Long> most_user = new HashMap<>();
+        List<User> users = userRepository.findTop3UsersByTotalOrder();
+        for(User u :users){
+            most_user.put(u.getUsername(),orderRepository.findTotalByUserId(u.getId()));
+        }
+        response.setMost_user(most_user);
+
+        //chart 2
+        Map<String, Long> most_product = new HashMap<>();
+        List<String> spus = productSpuRepo.findTop10ProductSpuNamesByTotalQuantity();
+        for(String spu_name : spus){
+            most_product.put(spu_name,orderSkuRepol.sumTotalQuantityByProductSpuId(productSpuRepo.findProductSpuByName(spu_name).getId()));
+        }
+        response.setMost_product(most_product);
         return response;
     }
 }
