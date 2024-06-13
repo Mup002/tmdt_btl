@@ -6,11 +6,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import tmdtdemo.tmdt.MapData.AddressMapper;
+import tmdtdemo.tmdt.MapData.OrderDetailMapper;
 import tmdtdemo.tmdt.dto.request.UserRequest;
-import tmdtdemo.tmdt.entity.Role;
+import tmdtdemo.tmdt.dto.response.AddressResponse;
+import tmdtdemo.tmdt.dto.response.OrderDetailResponse;
+import tmdtdemo.tmdt.dto.response.UserInfoDetailResponse;
 import tmdtdemo.tmdt.entity.User;
 import tmdtdemo.tmdt.exception.BaseException;
 import tmdtdemo.tmdt.exception.ResourceNotFoundException;
+import tmdtdemo.tmdt.repository.AddressRepository;
+import tmdtdemo.tmdt.repository.OrderRepository;
 import tmdtdemo.tmdt.repository.RoleRepository;
 import tmdtdemo.tmdt.repository.UserRepository;
 import tmdtdemo.tmdt.service.BaseRedisService;
@@ -31,6 +37,8 @@ public class UserServiceImpl implements UserService {
     private final EmailSenderService emailSenderService;
     private final BaseRedisService baseRedisService;
     private final RefreshTokenService refreshTokenService;
+    private final OrderRepository orderRepository;
+    private final AddressRepository addressRepository;
     @Override
     public BaseResponse register(UserRequest request) {
         BaseResponse response = new BaseResponse();
@@ -104,6 +112,28 @@ public class UserServiceImpl implements UserService {
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getName().equals("USER")))
                 .forEach(users::add);
         return users;
+    }
+
+    @Override
+    public UserInfoDetailResponse info(String x_name, String username) {
+        if(x_name == username || userRepository.findUserByUsername(x_name).getRoles().contains("ADMIN")){
+            User user = userRepository.findUserByUsername(username);
+            UserInfoDetailResponse info = new UserInfoDetailResponse();
+            info.setUsername(username);
+            info.setSdt(user.getPhone());
+            info.setUserId(user.getId());
+            info.setEmail(user.getEmail());
+            info.setRole_name(user.getRoles().toString());
+//            info.setTotal_all(orderRepository.sumTotalByUser(user.getId()));
+
+            List<AddressResponse> addressResponses = AddressMapper.INSTANCE.addressToLstResponse(addressRepository.findAddressByUserUsername(username));
+            info.setAddressResponseList(addressResponses);
+
+            List<OrderDetailResponse> orderResponses = OrderDetailMapper.INSTANCE.orderToLstDetailsResponse(orderRepository.findOrderDetailsByUserUsername(username));
+            info.setOrderDetailResponses(orderResponses);
+            return info;
+        }
+        throw new BaseException(HttpStatus.UNAUTHORIZED.toString(),"U dont have permission to access");
     }
 
 }

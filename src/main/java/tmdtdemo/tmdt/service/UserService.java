@@ -1,6 +1,7 @@
 package tmdtdemo.tmdt.service;
 
 import tmdtdemo.tmdt.dto.request.UserRequest;
+import tmdtdemo.tmdt.dto.response.UserInfoDetailResponse;
 import tmdtdemo.tmdt.entity.User;
 import tmdtdemo.tmdt.utils.BaseResponse;
 
@@ -12,5 +13,7 @@ public interface UserService {
     String logout(String username);
     List<User> getAllUser();
     List<User> getAllUserRole();
+
+    UserInfoDetailResponse info(String x_name, String username);
 
 }

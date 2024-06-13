@@ -1,5 +1,6 @@
 package tmdtdemo.tmdt.repository;
 
+import org.aspectj.weaver.ast.Or;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,8 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<OrderDetails,Long> {
     OrderDetails findOrderDetailsByCode
             (String code);
+
+    List<OrderDetails> findOrderDetailsByUserUsername(String username);
     //custom query
     @Query("SELECT SUM(od.total) FROM OrderDetails od WHERE od.status = 'DONE' AND MONTH(od.createdAt) = :month AND YEAR(od.createdAt) = :year")
     Long sumTotalByMonthAndYearAndStatus(@Param("month") int month, @Param("year") int year);
@@ -26,4 +29,7 @@ public interface OrderRepository extends JpaRepository<OrderDetails,Long> {
 
     @Query("SELECT od FROM OrderDetails  od where DATE(od.createdAt) = :createAt AND od.status='DONE'")
     List<OrderDetails> findAllOrderByDay(@Param("createAt") Date createAt);
+
+//    @Query("SELECT SUM(od.total) FROM OrderDetails  od where od.user.id =:userId")
+//    Long sumTotalByUser(@Param("usedId") Long userId);
 }

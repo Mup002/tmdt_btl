@@ -1,6 +1,7 @@
 package tmdtdemo.tmdt.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final BaseRedisService baseRedisService;
@@ -169,11 +171,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse detailOrder(String code,String x_name) {
+        log.info(x_name);
+        log.info(userRepository.findUserByUsername(x_name).getRoles().toString());
         OrderResponse orderResponse = new OrderResponse();
         OrderDetails orderDetails= orderRepository.findOrderDetailsByCode(code);
 
         User user = orderDetails.getUser();
-        if(user.getRoles().contains("ADMIN") || x_name.equalsIgnoreCase(user.getUsername())){
+        if(userRepository.findUserByUsername(x_name).getRoles().toString().contains("ADMIN") || x_name.equalsIgnoreCase(user.getUsername())){
             Address address = orderDetails.getAddress();
             UserDetailResponse userDetailResponse = new UserDetailResponse();
             userDetailResponse.setUsername(user.getUsername());
