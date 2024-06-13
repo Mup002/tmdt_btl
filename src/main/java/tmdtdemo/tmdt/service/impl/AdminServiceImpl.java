@@ -42,6 +42,7 @@ public class AdminServiceImpl implements AdminService {
     private final ShippingDetailsRepo shippingDetailsRepo;
     private final AddressService addressService;
     private final CarrierRepository carrierRepository;
+    private final OrderSkuRepo orderSkuRepo;
 
     @Override
     public BaseResponse createUser(UserRequest request) {
@@ -102,6 +103,18 @@ public class AdminServiceImpl implements AdminService {
         orderDetails.setProductSpus(productSpuList);
         orderRepository.save(orderDetails);
 
+        //----luu so luong san pham ban---////
+        for(CartRequest cart : request.getCarts()){
+            OrderSku orderSku = new OrderSku();
+            orderSku.setQuantity(cart.getQuantity());
+            ProductSpu spu = productSpuRepo.findProductSpuById(cart.getIdSpu());
+            ProductSku sku = productSkuRepo.findProductSkuById(cart.getIdSku());
+            orderSku.setOrderDetails(orderDetails);
+            orderSku.setProductSku(sku);
+            orderSkuRepo.save(orderSku);
+        }
+
+        ///------ket thuc luu so luon--------/////
         ShippingDetails shippingDetails = new ShippingDetails();
         shippingDetails.setCarrier(carrierRepository.findCarrierByCarrier(request.getShippingRequest().getCarrier()));
         shippingDetails.setOrderDetails(orderDetails);
@@ -109,7 +122,7 @@ public class AdminServiceImpl implements AdminService {
         shippingDetails.setFee_ship(request.getShippingRequest().getFee_ship());
         shippingDetails.setExpected(request.getShippingRequest().getExpected());
         shippingDetails.setPhone(request.getShippingRequest().getPhone());
-        shippingDetails.setStatus("Đơn mới");
+        shippingDetails.setStatus("DONE");
         shippingDetails.setTotal_bill(request.getShippingRequest().getTotal_bill());
         shippingDetails.setCode(request.getShippingRequest().getCode());
         shippingDetails.setService(request.getShippingRequest().getService());

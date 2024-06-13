@@ -11,6 +11,7 @@ import tmdtdemo.tmdt.common.PaymentStatus;
 import tmdtdemo.tmdt.dto.request.OrderRequest;
 import tmdtdemo.tmdt.dto.response.CartResponse;
 import tmdtdemo.tmdt.dto.response.OrderResponse;
+import tmdtdemo.tmdt.dto.response.ShippingResponse;
 import tmdtdemo.tmdt.dto.response.UserDetailResponse;
 import tmdtdemo.tmdt.entity.*;
 import tmdtdemo.tmdt.exception.BaseException;
@@ -41,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
     private final CarrierRepository carrierRepository;
     private final ShippingDetailsRepo shippingDetailsRepo;
     private final ImageRepository imageRepository;
+    private final OrderSkuRepo orderSkuRepo;
 
     @Override
     @Transactional
@@ -58,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
             for (CartResponse cart : cartRedis) {
                 ProductSpu spu = productSpuRepo.findProductSpuByName(cart.getProductSpu_name());
                 ProductSku sku = productSkuRepo.findProductSkuByColorAndProductSpuId(cart.getProductSku_name(), spu.getId());
+
                 if(cart.getQuantity() < sku.getQuantity()){
                     productService.quantityOreder(sku.getId(),cart.getQuantity());
                     productSkuList.add(sku);
@@ -71,6 +74,7 @@ public class OrderServiceImpl implements OrderService {
             }
             newOrder.setProductSkus(productSkuList);
             newOrder.setProductSpus(productSpuList);
+
 
             //-----------check dia chi---------////
 
@@ -118,13 +122,24 @@ public class OrderServiceImpl implements OrderService {
                 newOrder.setPayment_status(PaymentStatus.WAITING.toString());
             }
             orderRepository.save(newOrder);
+            //----luu so luong san pham ban---////
+            for(CartResponse cart : cartRedis){
+                OrderSku orderSku = new OrderSku();
+                orderSku.setQuantity(cart.getQuantity());
+                ProductSpu spu = productSpuRepo.findProductSpuByName(cart.getProductSpu_name());
+                orderSku.setOrderDetails(newOrder);
+                orderSku.setProductSku(productSkuRepo.findProductSkuByColorAndProductSpuId(cart.getProductSku_name(), spu.getId()));
+                orderSkuRepo.save(orderSku);
+            }
+
+            ///------ket thuc luu so luon--------/////
             //--- xu ly van chuyen--------//
 
             if(ObjectUtils.isEmpty(carrierRepository.findCarrierByCarrier(request.getShippingRequest().getCarrier()))){
                 throw new ResourceNotFoundException("Khong tim thay carrirer");
             }
             ShippingDetails shippingDetails = new ShippingDetails();
-            shippingDetails.setCarrier(carrierRepository.findCarrierByShortname(request.getShippingRequest().getCarrier()));
+            shippingDetails.setCarrier(carrierRepository.findCarrierByCarrier(request.getShippingRequest().getCarrier()));
             shippingDetails.setOrderDetails(newOrder);
             shippingDetails.setCreatedAt(new Date());
             shippingDetails.setFee_ship(request.getShippingRequest().getFee_ship());
@@ -193,12 +208,36 @@ public class OrderServiceImpl implements OrderService {
             orderResponse.setPayment_status(orderDetails.getPayment_status());
             orderResponse.setStatus(orderDetails.getStatus());
 
-
+            ShippingResponse shippingResponse = new ShippingResponse();
+            ShippingDetails shippingDetails = shippingDetailsRepo.findShippingDetailsByOrderDetailsId(orderDetails.getId());
+            shippingResponse.setCarrier_name(shippingDetails.getCarrier().getCarrier());
+            shippingResponse.setFee_ship(shippingDetails.getFee_ship());
+            shippingResponse.setService(shippingDetails.getService());
+            shippingResponse.setCode(shippingDetails.getCode());
+            shippingResponse.setTotal_bill(shippingDetails.getTotal_bill());
+            shippingResponse.setFee_ship(shippingDetails.getFee_ship());
+            orderResponse.setShippingResponse(shippingResponse);
+//            shippingResponse.
             List<CartResponse> cartResponseList = new ArrayList<>();
             List<ProductSku> skus = orderDetails.getProductSkus();
-            for(ProductSku sku : skus){
+//            for(ProductSku sku : skus){
+//                CartResponse cart = new CartResponse();
+//                cart.setQuantity(sku.getQuantity());
+//                cart.setPrice(sku.getPrice());
+//                cart.setIdSku(sku.getId());
+//                ProductSpu spu = sku.getProductSpu();
+//                cart.setSrc(imageRepository.findImageBySpuIdAndSkuId(spu.getId(),sku.getId()).getSrc());
+//                cart.setIdSpu(spu.getId());
+//                cart.setProductSpu_name(spu.getName());
+//                cart.setProductSku_name(sku.getColor());
+//
+//                cartResponseList.add(cart);
+//            }
+            List<OrderSku> orderSkus = orderSkuRepo.findOrderSkusByOrderDetailsId(orderDetails.getId());
+            for(OrderSku ordersku : orderSkus){
+                ProductSku sku = ordersku.getProductSku();
                 CartResponse cart = new CartResponse();
-                cart.setQuantity(sku.getQuantity());
+                cart.setQuantity(ordersku.getQuantity());
                 cart.setPrice(sku.getPrice());
                 cart.setIdSku(sku.getId());
                 ProductSpu spu = sku.getProductSpu();

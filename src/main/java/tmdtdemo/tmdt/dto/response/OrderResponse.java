@@ -14,4 +14,5 @@ public class OrderResponse {
     private CouponOrderResponse couponOrderResponse;
     private String payment_status;
     private String status;
+    private ShippingResponse shippingResponse;
 }
