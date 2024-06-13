@@ -27,4 +27,5 @@ public interface AdminService {
 
     List<String> getAllStatus();
     List<OrderDetailResponse> allOrderDetails();
+    String updateProductPrice(Long skuId, Long new_price);
 }

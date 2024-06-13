@@ -10,6 +10,7 @@ import tmdtdemo.tmdt.common.PaymentStatus;
 import tmdtdemo.tmdt.dto.request.OrderRequest;
 import tmdtdemo.tmdt.dto.response.CartResponse;
 import tmdtdemo.tmdt.dto.response.OrderResponse;
+import tmdtdemo.tmdt.dto.response.UserDetailResponse;
 import tmdtdemo.tmdt.entity.*;
 import tmdtdemo.tmdt.exception.BaseException;
 import tmdtdemo.tmdt.exception.ResourceNotFoundException;
@@ -37,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentService paymentService;
     private final CarrierRepository carrierRepository;
     private final ShippingDetailsRepo shippingDetailsRepo;
+    private final ImageRepository imageRepository;
 
     @Override
     @Transactional
@@ -140,17 +142,12 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    @Override
-    public OrderResponse detailOrder(String username) {
-        OrderResponse orderResponse = new OrderResponse();
-        String keyCart = HelperUtils.cartBuilderRedisKey(username);
-        List<CartResponse> cartResponseList = new ArrayList<>();
-        if(baseRedisService.hashExistsKey(keyCart, AppConstants.cartPrefixKey)){
-            cartResponseList = ChangeObject.jsonToListObject(baseRedisService.hashGet(keyCart,"cartData").toString(),CartResponse.class);
-            orderResponse.setCartResponseList(cartResponseList);
-        }
-        return null;
-    }
+//    @Override
+//    public List<OrderResponse> detailOrder(String username) {
+//        OrderResponse orderResponse = new OrderResponse();
+//
+//        return null;
+//    }
 
     @Override
     public boolean getOrderCodeExits(String code) {
@@ -168,5 +165,51 @@ public class OrderServiceImpl implements OrderService {
         orderDetails.setPayment_status(PaymentStatus.DONE.toString());
         orderRepository.save(orderDetails);
         return "done";
+    }
+
+    @Override
+    public OrderResponse detailOrder(String code,String x_name) {
+        OrderResponse orderResponse = new OrderResponse();
+        OrderDetails orderDetails= orderRepository.findOrderDetailsByCode(code);
+
+        User user = orderDetails.getUser();
+        if(user.getRoles().contains("ADMIN") || x_name.equalsIgnoreCase(user.getUsername())){
+            Address address = orderDetails.getAddress();
+            UserDetailResponse userDetailResponse = new UserDetailResponse();
+            userDetailResponse.setUsername(user.getUsername());
+            userDetailResponse.setCity(address.getCity());
+            userDetailResponse.setPhone(shippingDetailsRepo.findShippingDetailsByOrderDetailsId(orderDetails.getId()).getPhone());
+            userDetailResponse.setStreet(address.getStreet());
+            userDetailResponse.setDistrict(address.getDistrict());
+
+            orderResponse.setUserDetailResponse(userDetailResponse);
+
+            orderResponse.setCreatedDate(orderDetails.getCreatedAt().toString());
+            orderResponse.setQuantity(orderDetails.getTotal());
+            orderResponse.setPayment_status(orderDetails.getPayment_status());
+            orderResponse.setStatus(orderDetails.getStatus());
+
+
+            List<CartResponse> cartResponseList = new ArrayList<>();
+            List<ProductSku> skus = orderDetails.getProductSkus();
+            for(ProductSku sku : skus){
+                CartResponse cart = new CartResponse();
+                cart.setQuantity(sku.getQuantity());
+                cart.setPrice(sku.getPrice());
+                cart.setIdSku(sku.getId());
+                ProductSpu spu = sku.getProductSpu();
+                cart.setSrc(imageRepository.findImageBySpuIdAndSkuId(spu.getId(),sku.getId()).getSrc());
+                cart.setIdSpu(spu.getId());
+                cart.setProductSpu_name(spu.getName());
+                cart.setProductSku_name(sku.getColor());
+
+                cartResponseList.add(cart);
+            }
+
+            orderResponse.setCartResponseList(cartResponseList);
+            return orderResponse;
+        }
+        throw new BaseException(HttpStatus.UNAUTHORIZED.toString(),"U dont have permission to access");
+
     }
 }

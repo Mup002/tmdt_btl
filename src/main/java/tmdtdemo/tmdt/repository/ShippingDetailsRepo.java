@@ -7,4 +7,5 @@ import tmdtdemo.tmdt.entity.ShippingDetails;
 @Repository
 public interface ShippingDetailsRepo extends JpaRepository<ShippingDetails,Long> {
     ShippingDetails findShippingDetailsById(Long id);
+    ShippingDetails findShippingDetailsByOrderDetailsId(Long id);
 }

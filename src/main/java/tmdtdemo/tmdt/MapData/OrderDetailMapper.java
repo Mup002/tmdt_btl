@@ -12,7 +12,11 @@ import java.util.List;
 public interface OrderDetailMapper {
     OrderDetailMapper INSTANCE = Mappers.getMapper(OrderDetailMapper.class);
     @Mapping(source = "user.username" ,target = "username")
+    @Mapping(source = "createdAt", target = "createdAt")
+    @Mapping(source = "payment_status", target = "payment_status")
     OrderDetailResponse orderToDetailResponse(OrderDetails orderDetails);
     @Mapping(source = "user.username", target = "username")
+    @Mapping(source = "createdAt", target = "createdAt")
+    @Mapping(source = "payment_status", target = "payment_status")
     List<OrderDetailResponse> orderToLstDetailsResponse(List<OrderDetails> orderDetailsList);
 }

@@ -19,7 +19,6 @@ public class OrderDetails {
     private Long total;
     private String status;
 
-    @Nullable
     private String payment_status;
 
     @Column(name = "order_code")

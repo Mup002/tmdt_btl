@@ -26,4 +26,5 @@ public interface ProductService {
     List<ProductSku> getAllProductSku(Long idSpu);
     ProductSku updateQuantity(Long skuId,Long add_quantity);
     ProductSku updateCost(Long skuId, Long new_cost);
+    String updatePrice(Long skuId, Long new_price);
 }

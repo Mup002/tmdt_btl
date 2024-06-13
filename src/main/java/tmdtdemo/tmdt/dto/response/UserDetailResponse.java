@@ -8,4 +8,5 @@ public class UserDetailResponse {
     private String username;
     private String city;
     private String street;
+    private String district;
 }

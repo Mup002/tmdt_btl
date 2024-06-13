@@ -2,6 +2,7 @@ package tmdtdemo.tmdt.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tmdtdemo.tmdt.MapData.OrderDetailMapper;
@@ -144,5 +145,10 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<OrderDetailResponse> allOrderDetails() {
         return OrderDetailMapper.INSTANCE.orderToLstDetailsResponse(orderRepository.findAll());
+    }
+
+    @Override
+    public String updateProductPrice(Long skuId, Long new_price) {
+        return productService.updatePrice(skuId, new_price);
     }
 }

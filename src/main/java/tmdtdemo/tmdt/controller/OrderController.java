@@ -4,11 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tmdtdemo.tmdt.dto.request.OrderRequest;
+import tmdtdemo.tmdt.dto.response.OrderResponse;
 import tmdtdemo.tmdt.service.OrderService;
 import tmdtdemo.tmdt.utils.BaseResponse;
 
@@ -29,5 +27,20 @@ public class OrderController {
                         .code(HttpStatus.OK.toString())
                         .message(orderService.newOrder(httpServletRequest.getHeader("x-client-username"),orderRequest, ip )).build()
         );
+    }
+
+    @GetMapping("/getDetailOrder")
+    public ResponseEntity<OrderResponse> detail(
+            @RequestParam String ordercode,
+            HttpServletRequest servletRequest){
+        String header = null;
+        if(servletRequest.getHeader("x-client-username") == null){
+            header = servletRequest.getHeader("x-admin-username");
+        }else{
+            header = servletRequest.getHeader("x-client-username");
+        }
+        return ResponseEntity.ok(orderService.detailOrder(
+                ordercode,
+                header));
     }
 }

@@ -76,4 +76,13 @@ public class AdminController {
     public ResponseEntity<List<OrderDetailResponse>> getAllOrder(){
         return ResponseEntity.ok(adminService.allOrderDetails());
     }
+    @PatchMapping("/changePrice")
+    public ResponseEntity<BaseResponse> changePrice(
+            @RequestParam Long skuId,
+            @RequestParam Long newPrice
+    ){
+        return ResponseEntity.ok(BaseResponse.builder()
+                .code(HttpStatus.OK.toString())
+                .message(adminService.updateProductPrice(skuId,newPrice)).build());
+    }
 }

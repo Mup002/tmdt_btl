@@ -10,7 +10,8 @@ public class OrderResponse {
     private UserDetailResponse userDetailResponse;
     private String createdDate;
     private List<CartResponse> cartResponseList = new ArrayList<>();
-    private Double quantity;
+    private Long quantity;
     private CouponOrderResponse couponOrderResponse;
-    private boolean payment_status;
+    private String payment_status;
+    private String status;
 }
