@@ -26,6 +26,7 @@ public class RequestURL {
             "/api/v1/coupon/admin/create",
             "/api/v1/importData/**",
             "/api/v1/result/**",
-            "/api/v1/order/getDetailOrder/**"
+            "/api/v1/order/getDetailOrder/**",
+            "/api/v1/user/info/**"
     };
 }

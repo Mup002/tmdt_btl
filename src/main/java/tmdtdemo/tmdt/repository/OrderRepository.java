@@ -30,6 +30,6 @@ public interface OrderRepository extends JpaRepository<OrderDetails,Long> {
     @Query("SELECT od FROM OrderDetails  od where DATE(od.createdAt) = :createAt AND od.status='DONE'")
     List<OrderDetails> findAllOrderByDay(@Param("createAt") Date createAt);
 
-//    @Query("SELECT SUM(od.total) FROM OrderDetails  od where od.user.id =:userId")
-//    Long sumTotalByUser(@Param("usedId") Long userId);
+    @Query(value = "SELECT SUM(od.total) FROM orderdetails od WHERE od.user_id = :userId", nativeQuery = true)
+    Long sumTotalByUser(@Param("userId") Long userId);
 }

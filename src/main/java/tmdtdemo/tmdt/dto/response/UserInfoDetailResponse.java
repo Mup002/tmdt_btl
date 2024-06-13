@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class UserInfoDetailResponse {
     private String username;
-    private String role_name;
+    private List<String> role_name = new ArrayList<>();
     private Long userId;
     private Long total_all;
     private String email;

@@ -12,6 +12,7 @@ import tmdtdemo.tmdt.dto.request.UserRequest;
 import tmdtdemo.tmdt.dto.response.AddressResponse;
 import tmdtdemo.tmdt.dto.response.OrderDetailResponse;
 import tmdtdemo.tmdt.dto.response.UserInfoDetailResponse;
+import tmdtdemo.tmdt.entity.Role;
 import tmdtdemo.tmdt.entity.User;
 import tmdtdemo.tmdt.exception.BaseException;
 import tmdtdemo.tmdt.exception.ResourceNotFoundException;
@@ -116,15 +117,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfoDetailResponse info(String x_name, String username) {
-        if(x_name == username || userRepository.findUserByUsername(x_name).getRoles().contains("ADMIN")){
+        if(x_name == username || userRepository.findUserByUsername(x_name).getRoles().toString().contains("ADMIN")){
             User user = userRepository.findUserByUsername(username);
             UserInfoDetailResponse info = new UserInfoDetailResponse();
             info.setUsername(username);
             info.setSdt(user.getPhone());
             info.setUserId(user.getId());
             info.setEmail(user.getEmail());
-            info.setRole_name(user.getRoles().toString());
-//            info.setTotal_all(orderRepository.sumTotalByUser(user.getId()));
+
+            List<String> roleLst = new ArrayList<>();
+            user.getRoles().forEach(
+                    role -> roleLst.add(role.getName())
+            );
+            info.setRole_name(roleLst);
+            info.setTotal_all(orderRepository.sumTotalByUser(user.getId()));
 
             List<AddressResponse> addressResponses = AddressMapper.INSTANCE.addressToLstResponse(addressRepository.findAddressByUserUsername(username));
             info.setAddressResponseList(addressResponses);
