@@ -32,4 +32,7 @@ public interface OrderRepository extends JpaRepository<OrderDetails,Long> {
 
     @Query(value = "SELECT SUM(od.total) FROM orderdetails od WHERE od.user_id = :userId", nativeQuery = true)
     Long sumTotalByUser(@Param("userId") Long userId);
+
+    @Query("SELECT COUNT(*) FROM OrderDetails WHERE MONTH(createdAt) = :month AND YEAR(createdAt) = :year")
+    Long countOrdersByMonth(@Param("month") int month, @Param("year") int year);
 }

@@ -12,6 +12,7 @@ public class RequestURL {
             "/api/v1/address/**",
             "/api/v1/report/**"
 
+
     };
      protected static String[] SECURED_URLS_ROLE_USER = {
             "/api/v1/cart/**",
@@ -27,6 +28,7 @@ public class RequestURL {
             "/api/v1/importData/**",
             "/api/v1/result/**",
             "/api/v1/order/getDetailOrder/**",
-            "/api/v1/user/info/**"
+            "/api/v1/user/info/**",
+            "/api/v1/dashboard/**"
     };
 }
