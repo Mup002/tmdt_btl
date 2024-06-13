@@ -13,6 +13,7 @@ public class DashboardResponseForDay {
     private List<Long> skuIDS = new ArrayList<>();
     private Map<String,Long> type_product_by_day = new HashMap<>();
     private Map<String,Long> status_order_by_day = new HashMap<>();
-    private Map<String,Long> revenue_city_by_day = new HashMap<>();
-    private Map<String,Long> most_user_total_by_day = new HashMap<>();
+
+    private Map<Long, Long> revenue_by_day = new HashMap<>();
+    private Map<Long, Long> profit_by_day = new HashMap<>();
 }

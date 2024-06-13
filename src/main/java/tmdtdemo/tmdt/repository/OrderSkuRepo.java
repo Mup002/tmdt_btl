@@ -13,9 +13,9 @@ import java.util.List;
 public interface OrderSkuRepo extends JpaRepository<OrderSku,Long> {
     List<OrderSku> findOrderSkusByOrderDetailsId(Long id);
 
-    @Query(value = "SELECT SUM(os.quantity) FROM orderskus os JOIN orderdetails od ON os.orderdetail_id = od.orderdetail_id WHERE od.created_at BETWEEN :startDate AND :endDate", nativeQuery = true)
+    @Query(value = "SELECT SUM(os.quantity) FROM orderskus os JOIN orderdetails od ON os.orderdetail_id = od.orderdetail_id WHERE od.status = 'DONE' AND od.created_at BETWEEN :startDate AND :endDate", nativeQuery = true)
     Long sumQuantityByOrderDetailsCreatedAtBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
-    @Query(value = "SELECT os.sku_id FROM orderskus os JOIN orderdetails od ON os.orderdetail_id = od.orderdetail_id WHERE od.created_at BETWEEN :startDate AND :endDate", nativeQuery = true)
+    @Query(value = "SELECT os.sku_id FROM orderskus os JOIN orderdetails od ON os.orderdetail_id = od.orderdetail_id WHERE od.status = 'DONE' AND od.created_at BETWEEN :startDate AND :endDate", nativeQuery = true)
     List<Long> findSkuIdsByOrderDetailsCreatedAtBetween(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }

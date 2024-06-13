@@ -5,11 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tmdtdemo.tmdt.dto.response.DashboardResponseForDay;
 import tmdtdemo.tmdt.dto.response.DashboardResponseForMonth;
+import tmdtdemo.tmdt.entity.DailyRevenue;
 import tmdtdemo.tmdt.entity.ResultRevenue;
-import tmdtdemo.tmdt.repository.OrderRepository;
-import tmdtdemo.tmdt.repository.OrderSkuRepo;
-import tmdtdemo.tmdt.repository.ProductSpuRepo;
-import tmdtdemo.tmdt.repository.ResultRevenueRepo;
+import tmdtdemo.tmdt.repository.*;
 import tmdtdemo.tmdt.service.DashboardService;
 
 import java.text.DecimalFormat;
@@ -26,6 +24,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final OrderRepository orderRepository;
     private final OrderSkuRepo orderSkuRepol;
     private final ProductSpuRepo productSpuRepo;
+    private final DailyRevenueRepo dailyRevenueRepo;
     @Override
     public DashboardResponseForMonth getReportByMonth(int month, int year) {
         DashboardResponseForMonth response_current = new DashboardResponseForMonth();
@@ -132,6 +131,24 @@ public class DashboardServiceImpl implements DashboardService {
             }
         }
         response.setType_product_by_day(type_product_by_day);
+
+
+        // chart 2
+        Map<String,Long> status_order_by_day = new HashMap<>();
+        status_order_by_day.put("DONE", orderRepository.countOrderDone(dateFrom,dateTo));
+        status_order_by_day.put("CANCELED",orderRepository.countOrderFail(dateFrom,dateTo));
+        response.setStatus_order_by_day(status_order_by_day);
+
+        //chart 3
+        List<DailyRevenue> dailyRevenues = dailyRevenueRepo.findAllDailyRevenue(dateFrom,dateTo);
+        Map<Long, Long> revenue_by_day = new HashMap<>();
+        Map<Long, Long> profit_by_day = new HashMap<>();
+        for(DailyRevenue dr : dailyRevenues){
+            revenue_by_day.put(dr.getId(),dr.getRevenue());
+            profit_by_day .put(dr.getId(),dr.getProfit());
+        }
+        response.setProfit_by_day(profit_by_day);
+        response.setRevenue_by_day(revenue_by_day);
 
         return response;
     }

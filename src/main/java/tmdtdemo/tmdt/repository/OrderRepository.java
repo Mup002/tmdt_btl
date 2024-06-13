@@ -35,4 +35,10 @@ public interface OrderRepository extends JpaRepository<OrderDetails,Long> {
 
     @Query("SELECT COUNT(*) FROM OrderDetails WHERE MONTH(createdAt) = :month AND YEAR(createdAt) = :year")
     Long countOrdersByMonth(@Param("month") int month, @Param("year") int year);
+
+    @Query("SELECT COUNT(*) FROM OrderDetails where status = 'DONE' and createdAt between :startDate and :endDate")
+    Long countOrderDone(@Param("startDate")Date startDate,@Param("endDate")Date endDate);
+
+    @Query("SELECT COUNT(*) FROM OrderDetails where status = 'CANCELED'and createdAt between :startDate and :endDate")
+    Long countOrderFail(@Param("startDate")Date startDate,@Param("endDate")Date endDate);
 }

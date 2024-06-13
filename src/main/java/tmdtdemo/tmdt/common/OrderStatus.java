@@ -3,7 +3,7 @@ package tmdtdemo.tmdt.common;
 public enum OrderStatus {
     PROCESSING,
     DONE,
-    CACELED,
+    CANCELED,
     WAITING,
     SHIPPING
 }
