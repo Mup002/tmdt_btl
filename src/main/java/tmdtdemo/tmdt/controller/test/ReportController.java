@@ -70,16 +70,11 @@ public class ReportController {
 
     @PostMapping("/export_demo")
     public ResponseEntity<String> export_demo(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam int day,
             @RequestParam int month,
             @RequestParam int year,
-            @RequestParam String username,
-            @RequestParam String date,
-            @RequestParam Long num_of_orders,
-            @RequestParam Long profit,
-            @RequestParam Long revenue
+            @RequestParam String username
+
             ){
-        return ResponseEntity.ok(reportService.exportReportDemo(file,day,month,year,username,date,num_of_orders,profit,revenue));
+        return ResponseEntity.ok(reportService.exportReportDemo(month,year,username));
     }
 }
