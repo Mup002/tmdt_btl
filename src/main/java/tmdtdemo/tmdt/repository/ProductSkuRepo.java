@@ -17,4 +17,7 @@ public interface ProductSkuRepo extends JpaRepository<ProductSku,Long> {
     @Query(value = "select MIN(price) from productskus where productspu_id = :productSpuId",nativeQuery = true)
     Double findMinPriceByProductSpuId(Long productSpuId);
 
+    @Query(value = "select", nativeQuery = true)
+    String findTypeBySkuId(Long skuId);
+
 }

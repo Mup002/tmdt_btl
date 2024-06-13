@@ -3,13 +3,20 @@ package tmdtdemo.tmdt.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tmdtdemo.tmdt.dto.response.DashboardResponseForDay;
 import tmdtdemo.tmdt.dto.response.DashboardResponseForMonth;
 import tmdtdemo.tmdt.entity.ResultRevenue;
 import tmdtdemo.tmdt.repository.OrderRepository;
+import tmdtdemo.tmdt.repository.OrderSkuRepo;
+import tmdtdemo.tmdt.repository.ProductSpuRepo;
 import tmdtdemo.tmdt.repository.ResultRevenueRepo;
 import tmdtdemo.tmdt.service.DashboardService;
 
 import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +24,8 @@ import java.text.DecimalFormat;
 public class DashboardServiceImpl implements DashboardService {
     private final ResultRevenueRepo resultRevenueRepo;
     private final OrderRepository orderRepository;
+    private final OrderSkuRepo orderSkuRepol;
+    private final ProductSpuRepo productSpuRepo;
     @Override
     public DashboardResponseForMonth getReportByMonth(int month, int year) {
         DashboardResponseForMonth response_current = new DashboardResponseForMonth();
@@ -95,12 +104,35 @@ public class DashboardServiceImpl implements DashboardService {
         }else if(percent2 > percent1){
             StringBuilder builder = new StringBuilder();
             builder.append("Giảm ");
-            builder.append((percent2 - percent1) * 100);
+            builder.append(df.format((percent2 - percent1) * 100));
             builder.append(" % so với tháng trước");
             response_current.setStatus_3(builder.toString());
         }else{
             response_current.setStatus_3(null);
         }
         return response_current;
+    }
+
+    @Override
+    public DashboardResponseForDay getReportByDay(Date dateFrom, Date dateTo) {
+        DashboardResponseForDay response = new DashboardResponseForDay();
+        response.setProduct_quantity_by_day(orderSkuRepol.sumQuantityByOrderDetailsCreatedAtBetween(dateFrom,dateTo));
+        List<Long> skuIds = orderSkuRepol.findSkuIdsByOrderDetailsCreatedAtBetween(dateFrom,dateTo);
+        response.setSkuIDS(orderSkuRepol.findSkuIdsByOrderDetailsCreatedAtBetween(dateFrom,dateTo));
+
+        // chart 1
+        Map<String,Long> type_product_by_day = new HashMap<>();
+        for(Long skuId : skuIds){
+            if(type_product_by_day.isEmpty() || !type_product_by_day.containsKey(productSpuRepo.findTypeByProductSkuId(skuId))){
+                type_product_by_day.put(productSpuRepo.findTypeByProductSkuId(skuId), Long.valueOf(1));
+            }else{
+                Long qtt = type_product_by_day.get(productSpuRepo.findTypeByProductSkuId(skuId)) + 1;
+                type_product_by_day.remove(productSpuRepo.findTypeByProductSkuId(skuId));
+                type_product_by_day.put(productSpuRepo.findTypeByProductSkuId(skuId),qtt);
+            }
+        }
+        response.setType_product_by_day(type_product_by_day);
+
+        return response;
     }
 }
