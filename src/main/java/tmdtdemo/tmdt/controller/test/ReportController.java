@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/report")
@@ -77,4 +78,20 @@ public class ReportController {
             ){
         return ResponseEntity.ok(reportService.exportReportDemo(month,year,username));
     }
+    @PostMapping("/test")
+    public ResponseEntity<List<String>> test(
+            @RequestParam int month,
+            @RequestParam int year
+    ){
+        return ResponseEntity.ok(reportService.test(month, year));
+    }
+//    @PostMapping("/test2")
+//    public ResponseEntity<Long> test2(
+//            @RequestParam Long id,
+//            @RequestParam int month,
+//            @RequestParam int year
+//    ){
+//        return ResponseEntity.ok(reportService.test2(id,month, year));
+//    }
+
 }

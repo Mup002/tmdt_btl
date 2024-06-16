@@ -29,4 +29,19 @@ public interface ProductSpuRepo extends JpaRepository<ProductSpu ,Long> {
             "ORDER BY SUM(osk.quantity) DESC " +
             "LIMIT 10", nativeQuery = true)
     List<String> findTop10ProductSpuNamesByTotalQuantity();
+
+    @Query(value = "SELECT ps.productspu_name " +
+            "FROM productspus ps " +
+            "JOIN productskus psk ON ps.productspu_id = psk.productspu_id " +
+            "JOIN orderskus osk ON psk.productsku_id = osk.sku_id " +
+            "JOIN orderdetails od ON osk.orderdetail_id = od.orderdetail_id " +
+            "WHERE EXTRACT(MONTH FROM od.created_at) = :month " +
+            "AND EXTRACT(YEAR FROM od.created_at) = :year " +
+            "GROUP BY ps.productspu_id " +
+            "ORDER BY SUM(osk.quantity) DESC " +
+            "LIMIT 10", nativeQuery = true)
+    List<String> findTop10ProductSpuNamesByTotalQuantityAndDate(@Param("month") int month, @Param("year") int year);
+
+
+
 }

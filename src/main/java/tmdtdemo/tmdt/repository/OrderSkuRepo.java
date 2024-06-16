@@ -24,4 +24,13 @@ public interface OrderSkuRepo extends JpaRepository<OrderSku,Long> {
             "JOIN productskus psk ON osk.sku_id = psk.productsku_id " +
             "WHERE psk.productspu_id = :productSpuId", nativeQuery = true)
     Long sumTotalQuantityByProductSpuId(@Param("productSpuId") Long productSpuId);
+
+
+//    @Query(value = "SELECT SUM(osk.quantity) " +
+//            "FROM orderskus osk " +
+//            "JOIN productskus psk ON osk.sku_id = psk.productsku_id " +
+//            "JOIN orderdetails od ON od.orderdetail_id = osk.orderdetail_id" +
+//            "WHERE psk.productspu_id = :productSpuId and MONTH(od.created_at) := month and YEAR(od.created_at) := year", nativeQuery = true)
+//    Long sumTotalQuantityByProductSpuIdByDate(@Param("productSpuId") Long productSpuId, @Param("month") int month ,@Param("year") int year);
+
 }

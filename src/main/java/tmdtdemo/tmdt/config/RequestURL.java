@@ -16,7 +16,7 @@ public class RequestURL {
     };
      protected static String[] SECURED_URLS_ROLE_USER = {
             "/api/v1/cart/**",
-            "/api/v1/user/index",
+            "/api/v1/user/**",
              "/api/v1/payment/pay",
              "/api/v1/order/**"
 

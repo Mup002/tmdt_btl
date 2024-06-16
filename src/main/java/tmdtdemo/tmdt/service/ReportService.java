@@ -1,5 +1,6 @@
 package tmdtdemo.tmdt.service;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -7,8 +8,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tmdtdemo.tmdt.dto.request.ReportRequest;
-import tmdtdemo.tmdt.repository.OrderRepository;
-import tmdtdemo.tmdt.repository.ResultRevenueRepo;
+import tmdtdemo.tmdt.repository.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,8 +17,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -26,6 +28,8 @@ import java.util.List;
 public class ReportService {
     private final ResultRevenueRepo resultRevenueRepo;
     private final OrderRepository orderRepository;
+    private final ProductSpuRepo productSpuRepo;
+    private final OrderSkuRepo orderSkuRepo;
     public void exportReport(String inputFilePath, String outputFilePath, String startDate, String endDate, int totalOrders, double totalRevenue) throws IOException {
         // Đọc file Word mẫu
         try (FileInputStream fis = new FileInputStream(inputFilePath);
@@ -87,7 +91,8 @@ public class ReportService {
         //--------- tạo báo cáo----------------//
         try (FileInputStream fis = new FileInputStream(filePath);
              XWPFDocument document = new XWPFDocument(fis)) {
-
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
+            String formattedDate = dateFormatter.format(new Date());
             // Cập nhật thông tin trong file Word
             List<XWPFParagraph> paragraphs = document.getParagraphs();
             for (XWPFParagraph paragraph : paragraphs) {
@@ -95,9 +100,17 @@ public class ReportService {
                     String text = run.getText(0);
                     if (text != null) {
                         text = text.replace("${username}", username);
-//                        text = text.replace("${date}", date);
-//                        text = text.replace("${startDate}", startDate);
-//                        text = text.replace("${endDate}", endDate);
+                        text = text.replace("${date}",formattedDate);
+                        StringBuilder sb= new StringBuilder();
+                        sb.append("01/");
+                        if(month < 10){
+                            sb.append("0");
+                        }
+                        sb.append(month);
+                        sb.append("/");
+                        sb.append(year);
+                        text = text.replace("${startDate}", sb.toString());
+                        text = text.replace("${endDate}", formattedDate);
                         text = text.replace("${totalOrders}",String.valueOf(orderRepository.countOrdersByMonth(month,year)));
                         text = text.replace("${totalRevenue}", String.valueOf(resultRevenueRepo.findResultRevenueByResultMonth(month, year).getRevenue()));
                         text = text.replace("${profit}", String.valueOf(resultRevenueRepo.findResultRevenueByResultMonth(month, year).getProfit()));
@@ -123,5 +136,12 @@ public class ReportService {
 
         return outputPath.toString();
     }
+    public List<String> test(int month,int year){
+        return productSpuRepo.findTop10ProductSpuNamesByTotalQuantityAndDate(month, year);
+    }
+
+//    public Long test2(Long productSpuId, int month, int year){
+//        return orderSkuRepo.sumTotalQuantityByProductSpuIdByDate(productSpuId,month,year);
+//    }
 
 }

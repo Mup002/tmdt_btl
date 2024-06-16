@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfoDetailResponse info(String x_name, String username) {
-        if(x_name == username || userRepository.findUserByUsername(x_name).getRoles().toString().contains("ADMIN")){
+        if(x_name.equalsIgnoreCase(username) || userRepository.findUserByUsername(x_name).getRoles().toString().contains("ADMIN")){
             User user = userRepository.findUserByUsername(username);
             UserInfoDetailResponse info = new UserInfoDetailResponse();
             info.setUsername(username);

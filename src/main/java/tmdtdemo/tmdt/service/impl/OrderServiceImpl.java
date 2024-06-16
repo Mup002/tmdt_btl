@@ -192,7 +192,8 @@ public class OrderServiceImpl implements OrderService {
         OrderDetails orderDetails= orderRepository.findOrderDetailsByCode(code);
 
         User user = orderDetails.getUser();
-        if(userRepository.findUserByUsername(x_name).getRoles().toString().contains("ADMIN") || x_name.equalsIgnoreCase(user.getUsername())){
+        if(userRepository.findUserByUsername(x_name).getRoles().toString().contains("ADMIN")
+                || x_name.equalsIgnoreCase(user.getUsername())){
             Address address = orderDetails.getAddress();
             UserDetailResponse userDetailResponse = new UserDetailResponse();
             userDetailResponse.setUsername(user.getUsername());
